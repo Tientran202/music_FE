@@ -21,7 +21,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   width: 97%;
-  margin: 0 0 0 30px;
+  margin:  0 0 30px;
   font-family: Arial, Helvetica, sans-serif;
   padding: 20px 0 0 0;
 }

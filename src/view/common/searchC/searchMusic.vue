@@ -5,25 +5,74 @@
       <li class="title-container">Tiêu đề</li>
       <li class="duration">Thời lượng</li>
     </ul>
-    <ul v-for="(music, index) in musics" :key="index">
-      <li class="stt">{{ music.stt }}</li>
+    <ul
+      class="music"
+      v-for="(searchResult, index) in searchResults"
+      :key="index"
+    >
+      <li class="stt">{{ index + 1 }}</li>
       <li class="title-container">
-        <img class="img-music" :src="require('/src/assets/mtp.jpeg')" alt="" />
+        <img
+          class="img-music"
+          :src="'data:image/jpeg;base64,' + searchResult.img"
+          alt=""
+        />
         <div class="info-music">
-          <span class="title">{{ music.music_name }}</span>
-          <span class="name-artist">{{ music.name_artist }}</span>
+          <span class="title">{{ searchResult.musicName }}</span>
+          <span class="name-artist">{{ searchResult.name }}</span>
         </div>
       </li>
-      <li class="duration">{{ music.duration }}</li>
+      <li class="duration">{{ searchResult.duration }}</li>
     </ul>
   </div>
 </template>
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      keyword: this.$route.query.keyword || "",
+      searchResults: [],
+    };
+  },
+  created() {
+    this.fetchSearchResults();
+  },
+  watch: {
+    // Khi keyword thay đổi, gọi lại fetchSearchResults
+    "$route.query.keyword"(newKeyword) {
+      this.keyword = newKeyword; // Cập nhật keyword
+      this.fetchSearchResults(); // Gọi lại API khi keyword thay đổi
+    },
+  },
+  methods: {
+    async fetchSearchResults() {
+      if (this.keyword) {
+        try {
+          const response = await axios.get(
+            "http://localhost:8080/api/music/searchMusic",
+            {
+              params: { keyword: this.keyword },
+            }
+          );
+          this.searchResults = response.data;
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        }
+      }
+    },
+  },
+};
+</script>
+
 <style scoped>
 .music-container {
   display: flex;
   flex-direction: column;
-  gap:0;
+  gap: 0;
   font-family: Arial, Helvetica, sans-serif;
+  color: #a5a5a5;
+  font-size: 14px;
 }
 ul {
   display: flex;
@@ -36,6 +85,9 @@ ul:hover {
   align-items: center;
   background: #42424260;
 }
+.music {
+  display: flex;
+}
 li {
   display: flex;
   list-style: none;
@@ -45,7 +97,6 @@ li {
   width: 100px;
 }
 .title-container {
-  display: flex;
   flex-direction: row;
   width: 1100px;
 }
@@ -54,78 +105,25 @@ li {
   width: 40px;
   border-radius: 5px;
 }
-.info-music{
-    display: flex;
-    flex-direction: column;
+.info-music {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0 20px;
+  justify-content: flex-start;
 }
-.info-music{
-    margin: 0 0 0 10px;
-}
+
 .title {
   width: 300px;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
+  font-size: 15px;
+  font-weight: bold;
 }
-.name-artist{
-    color: #b8b8b8;
-    font-size: 13px;
+.name-artist {
+  margin: 5px 0 0 0;
+  text-align: left;
+  color: #b8b8b8;
+  font-size: 12px;
 }
 </style>
-<script>
-export default {
-  data() {
-    return {
-      musics: [
-        {
-          stt: 1,
-          music_name: "chung ta cua hien tai",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-        {
-          stt: 2,
-          music_name: "chung ta cua hien tai",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-        {
-          stt: 3,
-          music_name: "chung ta cua hien tai",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-        {
-          stt: 4,
-          music_name: "chung ta cua hien tai",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-        {
-          stt: 5,
-          music_name: "chung ta cua hien tai",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-        {
-          stt: 6,
-          music_name: "chung ta cua hien tai",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-        {
-          stt: 7,
-          music_name: "cjhwgefhiwifiwiufhouhgiheuirghuiehugiiuergiuheiurghiheiuhguiheiuhgiuehrig",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-        {
-          stt: 8,
-          music_name: "chung ta cua hien tai",
-          duration: "4'30",
-          name_artist: "Son Tung MTP",
-        },
-      ],
-    };
-  },
-};
-</script>

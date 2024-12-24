@@ -1,37 +1,53 @@
 <template>
   <div class="header-container">
-    <router-link to="/searchC/">
-      <button class="btn-header">Tất cả</button>
-    </router-link>
-    <router-link to="/searchC/searchMusic">
+    <router-link :to="getMenuLink('searchMusic')">
       <button class="btn-header">Bài hát</button>
     </router-link>
-    <router-link to="/searchC/searchArtist">
+    <router-link :to="getMenuLink('searchArtist')">
       <button class="btn-header">Nghệ sĩ</button>
     </router-link>
-    <router-link to="/searchC/searchPlaylist">
+    <router-link :to="getMenuLink('searchPlaylist')">
       <button class="btn-header">Playlist</button>
     </router-link>
-    <router-link to="/searchC/searchAlbum">
+    <router-link :to="getMenuLink('searchAlbum')">
       <button class="btn-header">Album</button>
     </router-link>
-    <router-link to="/searchC/searchUser">
+    <router-link :to="getMenuLink('searchUser')">
       <button class="btn-header">Hồ sơ</button>
     </router-link>
   </div>
 </template>
 <script>
 export default {
+  computed: {
+    // Lấy keyword từ query param
+    searchKeyword() {
+      return this.$route.query.keyword || "";
+    },
+  },
   data() {
     return {
       searchArtistShow: false,
     };
+  },
+  methods: {
+    getMenuLink(menuType) {
+      return {
+        path: `/searchC/${menuType}`,
+        query: { keyword: encodeURIComponent(this.searchKeyword) },
+      };
+    },
   },
 };
 </script>
 
 <style scoped>
 .header-container {
+  position: fixed;
+
+  width: 100%; /* Chiều rộng bằng với toàn bộ màn hình */
+  z-index: 1000; /* Đảm bảo menu nằm trên các phần tử khác */
+  
   display: flex;
   background: #0f0f0f;
   padding: 10px 0 10px 40px;

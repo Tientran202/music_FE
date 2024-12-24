@@ -2,11 +2,15 @@
   <div class="container">
     <div
       class="artist-container"
-      v-for="(artist, index) in artists"
+      v-for="(searchResult, index) in searchResults"
       :key="index"
     >
-      <img class="img-artist" :src="require('/src/assets/mtp.jpeg')" alt="" />
-      <span class="name-artist">{{ artist.name }}</span>
+      <img
+        class="img-artist"
+        :src="'data:image/jpeg;base64,' + searchResult.img"
+        alt=""
+      />
+      <span class="name-artist">{{ searchResult.name }}</span>
     </div>
   </div>
 </template>
@@ -35,43 +39,44 @@ img {
   height: 160px;
   border-radius: 50%;
 }
-.name-artist{
-    margin: 10px 0 0 0 ;
+.name-artist {
+  margin: 10px 0 0 0;
 }
 </style>
 <script>
+import axios from "axios";
 export default {
+  created() {
+    this.fetchSearchResults();
+  },
+  watch: {
+    // Khi keyword thay đổi, gọi lại fetchSearchResults
+    "$route.query.keyword"(newKeyword) {
+      this.keyword = newKeyword; // Cập nhật keyword
+      this.fetchSearchResults(); // Gọi lại API khi keyword thay đổi
+    },
+  },
+  methods: {
+    async fetchSearchResults() {
+      if (this.keyword) {
+        try {
+          const response = await axios.get(
+            "http://localhost:8080/api/user/searchArtist",
+            {
+              params: { keyword: this.keyword },
+            }
+          );
+          this.searchResults = response.data;
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        }
+      }
+    },
+  },
   data() {
     return {
-      artists: [
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-        { name: "MTP" },
-      ],
+      keyword: this.$route.query.keyword || "",
+      searchResults: [],
     };
   },
 };

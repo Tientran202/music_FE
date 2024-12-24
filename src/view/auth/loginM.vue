@@ -24,6 +24,7 @@
             id="pass"
             placeholder="Mật khẩu"
             :key="passwordVisible"
+            
           />
           <img
             id="eye"

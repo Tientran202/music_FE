@@ -11,7 +11,13 @@
             to="/"
           />
         </div>
-        <input type="text" placeholder="Tìm kiếm..." class="search-bar" />
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          class="search-bar"
+          v-model="searchKeyword"
+          @keydown.enter="onSearch"
+        />
       </header>
       <div class="image-user-container">
         <img :src="require('/src/assets/user.png')" alt="" class="image-user" />
@@ -26,10 +32,24 @@
 <script>
 export default {
   name: "App",
+  data() {
+    return {
+      searchKeyword: decodeURIComponent(this.$route.query.keyword || ""), // Lấy từ query param nếu có
+    };
+  },
   methods: {
     async goHome() {
       // Chuyển hướng tới trang Home
       this.$router.push("/");
+    },
+     onSearch() {
+      // Điều hướng khi nhấn Enter
+      if (this.searchKeyword.trim()) {
+        this.$router.push({
+          path: "/searchC/searchMusic",
+          query: { keyword: encodeURIComponent(this.searchKeyword) }, // Lưu giá trị vào query param
+        });
+      }
     },
   },
 };
