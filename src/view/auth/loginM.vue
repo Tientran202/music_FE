@@ -12,7 +12,7 @@
         <label for="email">Email hoặc tên đăng nhập</label>
         <input
           type="text"
-          v-model="email"
+          v-model="username"
           id="email"
           placeholder="Email hoặc tên đăng nhập"
         />
@@ -20,7 +20,7 @@
         <div id="password-container">
           <input
             :type="passwordVisible ? 'text' : 'password'"
-            v-model="pass"
+            v-model="password"
             id="pass"
             placeholder="Mật khẩu"
             :key="passwordVisible"
@@ -55,21 +55,39 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
       email: "",
-      pass: "",
+      username: "",
+      password: "",
       errorMessage: "",
       passwordVisible: false,
     };
   },
   methods: {
-    login() {
-      if (!this.email || !this.pass) {
+    async login() {
+      if (!this.username || !this.password) {
         this.errorMessage = "Nhập đầy đủ thông tin";
       } else {
-        console.log("Đang đăng nhập với email:", this.email);
+        const payload = {
+          username: this.username,
+          password: this.password,
+        };
+        try {
+          await axios
+            .post("http://localhost:8080/api/auth/login", payload)
+            .then((response) => {
+              if (response.status == 200) {
+                localStorage.setItem("accessToken", response.data.accessToken);
+                localStorage.setItem("refreshToken", response.data.refreshToken);
+                this.$router.push("/");
+              }
+            });
+        } catch (error) {
+          alert("Tên đăng nhập hoặc mật khẩu không đúng");
+        }
       }
     },
     togglePasswordVisibility() {

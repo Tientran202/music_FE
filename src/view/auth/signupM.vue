@@ -20,7 +20,7 @@
         <input
           type="text"
           v-model="username"
-          id="email"
+          id="usename"
           placeholder="Tên đăng nhập"
         />
         <label for="pass">Mật khẩu</label>
@@ -65,7 +65,7 @@
             alt=""
           />
         </div>
-        <label for="name">Nhập tên người dung</label>
+        <label for="name">Nhập tên người dùng</label>
         <input
           type="text"
           v-model="name"
@@ -128,6 +128,7 @@ export default {
       email: "",
       password: "",
       username: "",
+      name: "",
       re_pass: "",
       errorMessage: "",
       passwordVisible: false,
@@ -159,18 +160,40 @@ export default {
   },
 
   methods: {
+    showMessage(message) {
+      this.errorMessage = message;
+      // Tự động xóa thông báo sau 5 giây
+      setTimeout(() => {
+        this.errorMessage = null;
+      }, 3000);
+    },
     async signup() {
+      if (this.password != this.re_pass) {
+        this.showMessage("Nhập lại mật khẩu không khớp");
+        return;
+      }
+      const payload = {
+        email: this.email,
+        username: this.username,
+        password: this.password,
+        name: this.name,
+      };
       try {
         const response = await axios.post(
           "http://localhost:8080/api/auth/register",
-          {
-            username: this.username,
-            password: this.password,
-            email: this.email,
-          }
+          payload
         );
-        console.log(response.data);
+        alert("Đăng ký thành công!");
+        console.log(response.data); // Dữ liệu trả về từ API
+        this.showMessage("Đăng ký thành công!");
       } catch (error) {
+        if (error.response) {
+          // Lỗi từ phía server (HTTP 4xx hoặc 5xx)
+          this.showMessage(error.response.data.message || "Đăng ký thất bại.");
+        } else {
+          // Lỗi khác (ví dụ: không kết nối được với server)
+          this.showMessage("Lỗi kết nối, vui lòng thử lại.");
+        }
         console.error(error);
       }
     },
@@ -203,7 +226,7 @@ export default {
 <style scoped>
 #background {
   background-color: #4e9350;
-  height: 1100px;
+  height: 1150px;
   padding: 30px 0 0 0;
 }
 
@@ -237,7 +260,7 @@ export default {
   background-color: #121212;
   text-align: center;
   width: 50%;
-  height: 1050px;
+  height: 1100px;
   margin: auto auto;
   border-radius: 8px;
 }

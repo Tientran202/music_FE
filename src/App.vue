@@ -1,14 +1,21 @@
 <template>
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <HelloWorld msg="Welcome to Your Vue.js App" />
+  <MusicPlayer />
 </template>
 
 <script>
-import HelloWorld from './components/signupM.vue'
+import HelloWorld from "./components/menu.vue";
+import MusicPlayer from "./components/MusicPlayer.vue";
 
 export default {
-  name: 'App',
+  name: "App",
+
   components: {
-    HelloWorld
-  }
-}
+    HelloWorld,
+    MusicPlayer,
+  },
+  mounted() {
+    this.$store.dispatch("loadStoredAudio");
+  },
+};
 </script>
