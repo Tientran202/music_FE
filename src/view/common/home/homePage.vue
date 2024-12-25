@@ -3,7 +3,7 @@
     <div class="container-lists">
       <div class="playlist-container">
         <div class="title-container">
-          <div class="title">Album thịnh hành</div>
+          <div class="title">Album</div>
           <a v-if="!showAll" class="view-all">Xem tất cả</a>
         </div>
         <div class="playlist-wrapper">
@@ -11,7 +11,7 @@
             v-for="(TopAlbum, index) in listTopAlbums"
             :key="index"
             class="playlist-item"
-            @click="indexMusic(TopAlbum.id)"
+            @click="indexAlbum(TopAlbum.id)"
           >
             <img
               :src="'data:image/jpeg;base64,' + TopAlbum.img"
@@ -32,7 +32,7 @@
             v-for="(listNewMusic, index) in listNewMusics"
             :key="index"
             class="playlist-item"
-            @click="indexMusic(listNewMusic.id)"
+            @click="navigateToMusic(listNewMusic.id)"
           >
             <img
               :src="'data:image/jpeg;base64,' + listNewMusic.img"
@@ -54,7 +54,7 @@
             v-for="(recentlyMusic, index) in recentlyMusics"
             :key="index"
             class="playlist-item"
-            @click="indexMusic(recentlyMusic.id)"
+            @click="navigateToMusic(recentlyMusic.id)"
           >
             <img
               :src="'data:image/jpeg;base64,' + recentlyMusic.img"
@@ -88,7 +88,7 @@
       </div>
       <div class="playlist-container">
         <div class="title-container">
-          <div class="title">Nghệ sĩ phổ biến</div>
+          <div class="title">Nghệ sĩ gần đây</div>
           <a v-if="!showAll" class="view-all">Xem tất cả</a>
         </div>
         <div class="playlist-wrapper">
@@ -208,6 +208,13 @@ export default {
     indexMusic() {
       this.$router.push({ path: "/" });
     },
+    indexAlbum(albumId){
+      this.$router.push(`/indexAlbum/${albumId}`);
+    },
+    navigateToMusic(musicId) {
+      // Dẫn tới trang hiển thị chi tiết music với index
+      this.$router.push(`/index/${musicId}`);
+    },
     async fetchImage() {
       try {
         const response = await axios.get(
@@ -254,12 +261,15 @@ button {
 
 p {
   color: rgb(204, 194, 194);
+  text-align: left;
+}
+.container-lists{
+  padding: 70px 0 0 0;
 }
 .title-container {
   color: rgb(255, 255, 255);
   width: 1424px;
   display: flex;
-  margin: 10px 0 0 0;
   justify-content: space-between;
 }
 .title {
@@ -289,8 +299,6 @@ p {
   width: 150px;
   height: 150px;
 }
-
-
 .playlist-wrapper {
   display: flex;
   margin: 5px 0 0 0;

@@ -14,7 +14,8 @@
           type="text"
           v-model="username"
           id="email"
-          placeholder="Email hoặc tên đăng nhập"
+          placeholder="Tên đăng nhập"
+          @keydown.enter="login"
         />
         <label for="password">Mật khẩu</label>
         <div id="password-container">
@@ -24,7 +25,7 @@
             id="pass"
             placeholder="Mật khẩu"
             :key="passwordVisible"
-            
+            @keydown.enter="login"
           />
           <img
             id="eye"
@@ -82,7 +83,10 @@ export default {
             .then((response) => {
               if (response.status == 200) {
                 localStorage.setItem("accessToken", response.data.accessToken);
-                localStorage.setItem("refreshToken", response.data.refreshToken);
+                localStorage.setItem(
+                  "refreshToken",
+                  response.data.refreshToken
+                );
                 this.$router.push("/");
               }
             });

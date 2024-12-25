@@ -12,9 +12,6 @@
     <router-link :to="getMenuLink('searchAlbum')">
       <button class="btn-header">Album</button>
     </router-link>
-    <router-link :to="getMenuLink('searchUser')">
-      <button class="btn-header">Hồ sơ</button>
-    </router-link>
   </div>
 </template>
 <script>
@@ -47,7 +44,7 @@ export default {
 
   width: 100%; /* Chiều rộng bằng với toàn bộ màn hình */
   z-index: 1000; /* Đảm bảo menu nằm trên các phần tử khác */
-  
+
   display: flex;
   background: #0f0f0f;
   padding: 10px 0 10px 40px;

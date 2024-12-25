@@ -15,7 +15,6 @@ ul {
   gap: 20px; /* Khoảng cách giữa các mục */
   list-style: none; /* Loại bỏ dấu chấm đầu dòng */
   padding: 0 0 15px 0;
-  margin: 10px 0 10px 20px;
 }
 
 ul li a {

@@ -87,8 +87,8 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   width: 99%;
-  margin: 0 0 0 10px;
   font-family: Arial, Helvetica, sans-serif;
+  
 }
 a {
   cursor: pointer;
@@ -108,6 +108,7 @@ a {
   width: 173px;
   height: 250px;
   cursor: pointer;
+  margin: 50px 0 0 0;
 }
 .album-container:hover {
   background: #88888860;

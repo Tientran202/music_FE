@@ -1,17 +1,20 @@
 <template>
   <div class="info-container">
     <div class="info1">
-      <img class="img-user" :src="require('/src/assets/mtp.jpeg')" alt="" />
+      <img
+        class="img-user"
+        :src="'data:image/jpeg;base64,' + user.user_img"
+        alt=""
+      />
       <div class="info">
         <div>
           <span>Hồ sơ</span>
         </div>
         <div>
-          <span class="name">TranNgocTien</span>
+          <span class="name">{{ user.user_name }}</span>
         </div>
         <div class="dsp-ntd-container">
-          <span>1 danh sách phát</span> |
-          <span>8 đang theo dõi</span>
+          <span>{{ user.total_playlist }} danh sách phát</span>
         </div>
         <div class="setting-container">
           <button class="button-request-artist">Yêu cầu thành nghệ sĩ</button>
@@ -33,13 +36,13 @@
         <span class="more">xem tất cả</span>
       </div>
       <div class="container">
-        <div v-for="(list, index) in lists" :key="index" class="item">
+        <div v-for="(playlist, index) in playlists" :key="index" class="item">
           <img
             class="img-item-playlist"
-            :src="require('/src/assets/mtp.jpeg')"
+            :src="'data:image/jpeg;base64,' + playlist.playlist_img"
             alt=""
           />
-          <span class="name-playlist">{{ list.name }}</span>
+          <span class="name-playlist">{{ playlist.playlist_name }}</span>
         </div>
       </div>
     </div>
@@ -69,6 +72,63 @@
     </div>
   </div>
 </template>
+
+<script>
+import axios from "axios";
+export default {
+  created() {
+    this.getIndexUser();
+    this.getPlaylistByUserId();
+  },
+  data() {
+    return {
+      lists: [
+        { name: "playlist1" },
+        { name: "playlist2" },
+        { name: "playlist3" },
+        { name: "playlist4" },
+        { name: "playlist5" },
+        { name: "playlist6" },
+        { name: "playlist7" },
+      ],
+      artists: [
+        { name: "artist2" },
+        { name: "artist3" },
+        { name: "artist4" },
+        { name: "artist5" },
+        { name: "artist6" },
+        { name: "artist7" },
+        { name: "artist8" },
+      ],
+      userId: "",
+      user: {},
+    };
+  },
+  methods: {
+    async getIndexUser() {
+      this.userId = this.$route.params.id;
+      const response = await axios.get(
+        "http://localhost:8080/api/user/getIndexUser",
+        {
+          params: { userId: this.userId },
+        }
+      );
+      this.user = response.data;
+    },
+    async getPlaylistByUserId() {
+      this.userId = this.$route.params.id;
+      const response = await axios.get(
+        "http://localhost:8080/api/playlist/getPlaylistByUserId",
+        {
+          params: { userId: this.userId },
+        }
+      );
+      this.playlists = response.data;
+    },
+  },
+};
+</script>
+F
 <style scoped>
 .info-container {
   height: 840px;
@@ -89,6 +149,7 @@
 }
 .info {
   margin: 10px 0 0 20px;
+  text-align: left;
 }
 .topic {
   font-size: 20px;
@@ -139,6 +200,7 @@
 }
 .img-item-playlist {
   width: 160px;
+  height: 160px;
   border-radius: 10px;
 }
 .img-item-artist {
@@ -166,30 +228,3 @@
   align-items: center;
 }
 </style>
-<script>
-export default {
-  data() {
-    return {
-      lists: [
-        { name: "playlist1" },
-        { name: "playlist2" },
-        { name: "playlist3" },
-        { name: "playlist4" },
-        { name: "playlist5" },
-        { name: "playlist6" },
-        { name: "playlist7" },
-        
-      ],
-      artists: [
-        { name: "artist2" },
-        { name: "artist3" },
-        { name: "artist4" },
-        { name: "artist5" },
-        { name: "artist6" },
-        { name: "artist7" },
-        { name: "artist8" },
-      ],
-    };
-  },
-};
-</script>

@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div
-      v-for="(playlist, index) in playlists"
+      v-for="(album, index) in albums"
       :key="index"
       class="playlist-container"
     >
       <img :src="require('/src/assets/mtp.jpeg')" alt="" />
       <div class="information-playlist">
-        <span class="title1">{{ playlist.title }}</span>
+        <span class="title1">{{ album.album_name }}</span>
         <div class="title3">
-          <span class="title2">{{ playlist.year }}.</span>
-          <span class="title2">{{ playlist.user }}</span>
+          <span class="title2">{{formatDate(album.replease_day)}}.</span>
+          <span class="title2">{{ album.artist_name }}</span>
         </div>
       </div>
     </div>
@@ -21,7 +21,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
   width: 97%;
-  margin:  0 0 30px;
+  margin: 0 0 30px;
   font-family: Arial, Helvetica, sans-serif;
   padding: 20px 0 0 0;
 }
@@ -48,6 +48,7 @@ img {
 }
 
 .title1 {
+  text-align: left;
   font-size: 14px;
   width: 150px;
   overflow: hidden; /* Ẩn phần văn bản tràn ra ngoài */
@@ -61,44 +62,51 @@ img {
   text-overflow: ellipsis;
   display: block;
 }
-.title3{
-    display: flex;
+.title3 {
+  display: flex;
 }
 </style>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      playlists: [
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", year: "2024", user: "Son Tung MTP" },
-      ],
+      keyword: this.$route.query.keyword || "",
+      albums: [],
     };
+  },
+  created() {
+    this.fetchSearchResults();
+  },
+  watch: {
+    // Khi keyword thay đổi, gọi lại fetchSearchResults
+    "$route.query.keyword"(newKeyword) {
+      this.keyword = newKeyword; // Cập nhật keyword
+      this.fetchSearchResults(); // Gọi lại API khi keyword thay đổi
+    },
+  },
+  methods: {
+    async fetchSearchResults() {
+      if (this.keyword) {
+        try {
+          const response = await axios.get(
+            "http://localhost:8080/api/album/getSearchAlbum",
+            {
+              params: { keyword: this.keyword },
+            }
+          );
+          this.albums = response.data;
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        }
+      }
+    },
+    formatDate(date) {
+      const options = {
+        year: "numeric",
+      };
+      return new Date(date).toLocaleString("vi-VN", options);
+    },
   },
 };
 </script>

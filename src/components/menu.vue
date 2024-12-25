@@ -9,6 +9,7 @@
             alt="sfwef"
             id="icon-home"
             to="/"
+            @click="clearSearch"
           />
         </div>
         <input
@@ -50,6 +51,10 @@ export default {
           query: { keyword: encodeURIComponent(this.searchKeyword) }, // Lưu giá trị vào query param
         });
       }
+    },
+      clearSearch() {
+      // Làm trống giá trị input khi click vào ảnh
+      this.searchKeyword = "";
     },
   },
 };
@@ -128,5 +133,6 @@ export default {
 .content {
   margin: 60px -20px -20px -10px;
   background: #121212;
+  min-height: 1000px;
 }
 </style>

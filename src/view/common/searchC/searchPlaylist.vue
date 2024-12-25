@@ -7,12 +7,50 @@
     >
       <img :src="require('/src/assets/mtp.jpeg')" alt="" />
       <div class="information-playlist">
-        <span class="title1">{{ playlist.title }}</span>
-        <span class="title2">{{ playlist.user }}</span>
+        <span class="title1">{{ playlist.playlist_name }}</span>
+        <span class="title2">{{ playlist.user_name }}</span>
       </div>
     </div>
   </div>
 </template>
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      keyword: this.$route.query.keyword || "",
+      playlists: [],
+    };
+  },
+  created() {
+    this.fetchSearchResults();
+  },
+  watch: {
+    // Khi keyword thay đổi, gọi lại fetchSearchResults
+    "$route.query.keyword"(newKeyword) {
+      this.keyword = newKeyword; // Cập nhật keyword
+      this.fetchSearchResults(); // Gọi lại API khi keyword thay đổi
+    },
+  },
+  methods: {
+    async fetchSearchResults() {
+      if (this.keyword) {
+        try {
+          const response = await axios.get(
+            "http://localhost:8080/api/playlist/searchPlaylist",
+            {
+              params: { keyword: this.keyword },
+            }
+          );
+          this.playlists = response.data;
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        }
+      }
+    },
+  },
+};
+</script>
 <style scoped>
 .container {
   display: grid;
@@ -50,6 +88,7 @@ img {
   overflow: hidden; /* Ẩn phần văn bản tràn ra ngoài */
   text-overflow: ellipsis; /* Thêm dấu ba chấm khi văn bản bị cắt */
   display: block; /* Đảm bảo phần tử là block để các thuộc tính trên hoạt động */
+  text-align: left;
 }
 .title2 {
   font-size: 12px;
@@ -58,88 +97,7 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
+  text-align: left;
 }
 </style>
-<script>
-export default {
-  data() {
-    return {
-      playlists: [
-        {
-          title: "Chung Ta Cua Hien Tai",
-          user: "Son Tung MTP",
-        },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-        { title: "Chung Ta Cua Hien Tai", user: "Son Tung MTP" },
-      ],
-    };
-  },
-};
-</script>
+
