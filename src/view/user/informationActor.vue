@@ -57,16 +57,16 @@
       </div>
       <div class="container">
         <div
-          v-for="(artist, index) in artists"
+          v-for="(flowing, index) in flowings"
           :key="index"
           class="item-artist"
         >
           <img
             class="img-item-artist"
-            :src="require('/src/assets/mtp.jpeg')"
+            :src="'data:image/jpeg;base64,' + flowing.artist_img"
             alt=""
           />
-          <span class="name-artist">{{ artist.name }}</span>
+          <span class="name-artist">{{ flowing.artist_name }}</span>
         </div>
       </div>
     </div>
@@ -79,29 +79,14 @@ export default {
   created() {
     this.getIndexUser();
     this.getPlaylistByUserId();
+    this.getFlowingByUserId();
   },
   data() {
     return {
-      lists: [
-        { name: "playlist1" },
-        { name: "playlist2" },
-        { name: "playlist3" },
-        { name: "playlist4" },
-        { name: "playlist5" },
-        { name: "playlist6" },
-        { name: "playlist7" },
-      ],
-      artists: [
-        { name: "artist2" },
-        { name: "artist3" },
-        { name: "artist4" },
-        { name: "artist5" },
-        { name: "artist6" },
-        { name: "artist7" },
-        { name: "artist8" },
-      ],
       userId: "",
       user: {},
+      playlists:{},
+      flowings:{}
     };
   },
   methods: {
@@ -124,6 +109,16 @@ export default {
         }
       );
       this.playlists = response.data;
+    },
+    async getFlowingByUserId() {
+      this.userId = this.$route.params.id;
+      const response = await axios.get(
+        "http://localhost:8080/api/user/getFlowingByUserId",
+        {
+          params: { userId: this.userId },
+        }
+      );
+      this.flowings = response.data;
     },
   },
 };

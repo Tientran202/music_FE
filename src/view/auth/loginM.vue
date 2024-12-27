@@ -87,7 +87,12 @@ export default {
                   "refreshToken",
                   response.data.refreshToken
                 );
-                this.$router.push("/");
+                const role = response.data.role;
+                if (role == "admin") {
+                  this.$router.push("/dashboard");
+                } else {
+                  this.$router.push("/");
+                }
               }
             });
         } catch (error) {

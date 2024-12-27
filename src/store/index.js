@@ -6,9 +6,44 @@ export default createStore({
     isPlaying: false,
     audioSrc: null, // Chứa URL đối tượng của audio
     isAuthenticated: true, // Trạng thái xác thực
+    queue: [],         // Danh sách hàng đợi bài hát
   },
 
   mutations: {
+    //album
+    setQueue(state, songs) {
+      state.queue = songs;
+    },
+    playNextSong(state) {
+      if (state.queue.length > 0) {
+        const nextSong = state.queue.shift(); // Lấy bài hát đầu tiên
+        state.currentSong = nextSong;         // Cập nhật bài hát hiện tại
+    
+        if (nextSong.audio) {
+          let audioBlob;
+          if (typeof nextSong.audio === 'string') {
+            audioBlob = new Blob(
+              [new Uint8Array(atob(nextSong.audio).split('').map(c => c.charCodeAt(0)))],
+              { type: 'audio/mpeg' }
+            );
+          } else if (Array.isArray(nextSong.audio)) {
+            audioBlob = new Blob([new Uint8Array(nextSong.audio)], { type: 'audio/mpeg' });
+          }
+    
+          state.audioSrc = URL.createObjectURL(audioBlob);
+        }
+    
+        state.isPlaying = true;
+      } else {
+        state.currentSong = null;  // Không còn bài hát để phát
+        state.audioSrc = null;
+        state.isPlaying = false;
+      }
+    },
+    nextSong({ commit }) {
+      commit("playNextSong"); // Phát bài tiếp theo
+    },
+
     SET_AUTHENTICATED(state, value) {
       state.isAuthenticated = value; // Cập nhật trạng thái trang chu "/"
     },
@@ -60,6 +95,7 @@ export default createStore({
     playSong({ commit }, song) {
       commit('setSong', song);
     },
+    
     togglePlayPause({ commit }) {
       commit('togglePlayPause'); // Gọi mutation togglePlayPause
     },
@@ -67,13 +103,20 @@ export default createStore({
     stopSong({ commit }) {
       commit('clearSong'); // Gọi mutation để dừng và xóa bài hát
     },
+    addAlbumToQueue({ commit }, albumSongs) {
+      commit("setQueue", albumSongs); // Đặt album vào hàng đợi
+    },
+    
+    playNext({ commit }) {
+      commit("playNextSong"); // Phát bài tiếp theo
+    },
   },
 
   getters: {
     isAuthenticated: (state) => state.isAuthenticated, // Lấy trạng thái xác thực "/"
-
     currentSong: (state) => state.currentSong,
     isPlaying: (state) => state.isPlaying,
     audioSrc: (state) => state.audioSrc,
+    queue: (state) => state.queue,
   },
 });

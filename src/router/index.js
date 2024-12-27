@@ -14,7 +14,7 @@ import signup from '../view/auth/signupM.vue'
 import login from '../view/auth/loginM.vue'
 import settingU from '../view/user/settingU.vue'
 import playlist from '../view/common/playlistC.vue'
-import informationA from '../view/artist/informationA.vue'
+import informationA from '../view/artist/informationArtist.vue'
 import searchC from '../view/common/searchC/searchPage.vue'
 import searchMusic from '../view/common/searchC/searchMusic.vue'
 import searchArtist from '../view/common/searchC/searchArtist.vue'
@@ -32,11 +32,12 @@ import userList from '../view/admin/dashBoard/userList.vue'
 import userReported from '../view/admin/dashBoard/userReported.vue'
 import userHide from '../view/admin/dashBoard/userHidden.vue'
 import musicHide from '../view/admin/dashBoard/musicHidden.vue'
-import allPlaylist from '../view/common/list/allPlaylist.vue'
-import allAlbum from '../view/common/list/allAlbum.vue'
+import allNewMusic from '../view/common/list/allNewMusic.vue'
+import allAlbum from '../view/common/list/allTopAlbum.vue'
 import indexAlbum from '../view/common/indexAlbum.vue'
-
-
+import allRecentMusic from '../view/common/list/allRecentMusic.vue'
+import allPopularArtist from '../view/common/list/allPopularArtist.vue'
+import indexArtist from '../view/artist/indexArtist.vue'
 
 import axios from "axios";
 import store from "@/store";
@@ -45,26 +46,27 @@ const goHome = async (to, from, next) => {
     const refreshToken = localStorage.getItem("refreshToken");
     if (!accessToken) {
         next("/login");
-
-        if (this.$refs.audio) {
-            this.$refs.audio.currentTime = 0; 
-        }
+        return; // Dừng nếu accessToken không tồn tại
     }
-    
     try {
         const response = await axios.get(
             "http://localhost:8080/api/auth/check-token",
             { headers: { Authorization: `Bearer ${accessToken}` } }
         );
-    
+
         if (response.status === 200) {
-            const userId = response.data.user_id;
+            const role = response.data.role;
+            const userId = response.data.userId;
             localStorage.setItem("userId", userId);
+            localStorage.setItem("role", role);
             store.dispatch("setAuthenticated", true);
             next();
         }
+
+
     } catch (error) {
         if (error.response && error.response.status === 401) {
+
             console.warn("Access token hết hạn hoặc không hợp lệ.");
             try {
                 const refreshResponse = await axios.post(
@@ -84,13 +86,70 @@ const goHome = async (to, from, next) => {
             }
         } else {
             console.error("Đã xảy ra lỗi:", error);
-            if (this.$refs.audio) {
-                this.$refs.audio.currentTime = 0; // hoặc các thao tác khác
-            }
+            // if (this.$refs.audio) {
+            //     this.$refs.audio.currentTime = 0; // hoặc các thao tác khác
+            // }
             next("/login");
         }
     }
-    
+
+};
+import router from "@/router"; 
+const goIndexArtist = async (to, from, next) => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!accessToken) {
+        alert("Đăng nhập trước khi thực hiện");
+        next("/login");
+        return; // Dừng nếu accessToken không tồn tại
+    }
+    try {
+        const response = await axios.get(
+            "http://localhost:8080/api/auth/check-token",
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+
+        if (response.status === 200) {
+            const role = response.data.role;
+            if (role == "artist") {
+                const userId = response.data.userId;
+                this.$router.push({ name: "informationA", params: { id: userId } });
+                // store.dispatch("setAuthenticated", true);
+                next();
+            }
+        }
+
+
+    } catch (error) {
+        if (error.response && error.response.status === 401) {
+
+            console.warn("Access token hết hạn hoặc không hợp lệ.");
+            try {
+                const refreshResponse = await axios.post(
+                    "http://localhost:8080/api/auth/refresh-token",
+                    { refresh_token: refreshToken }
+                );
+                if (refreshResponse.status === 200) {
+                    const newAccessToken = refreshResponse.data.access_token;
+                    localStorage.setItem("accessToken", newAccessToken);
+                    store.dispatch("setAuthenticated", true);
+                    next();
+                }
+            } catch (refreshError) {
+                console.error("Không thể làm mới token:", refreshError.message);
+                alert("Vui lòng đăng nhập lại.");
+                next("/login");
+            }
+        } else {
+            console.error("Đã xảy ra lỗi:", error);
+            alert(error);
+            // if (this.$refs.audio) {
+            //     this.$refs.audio.currentTime = 0; // hoặc các thao tác khác
+            // }
+            next("/login");
+        }
+    }
+
 };
 
 const routes = [
@@ -122,6 +181,11 @@ const routes = [
         path: '/indexAlbum/:id',
         name: 'indexAlbum',
         component: indexAlbum,
+    },
+    {
+        path: '/allRecentMusic',
+        name: 'allRecentMusic',
+        component: allRecentMusic,
     },
     {
         path: '/index2',
@@ -163,10 +227,23 @@ const routes = [
         name: 'informationA',
         component: informationA,
     },
+
+
     {
-        path: '/allPlaylist',
-        name: 'allPlaylist',
-        component: allPlaylist,
+        path: '/allPopularArtist',
+        name: 'allPopularArtist',
+        component: allPopularArtist,
+    },
+    {
+        path: '/allNewMusic',
+        name: 'allNewMusic',
+        component: allNewMusic,
+    },
+    {
+        path: '/indexArtist',
+        name: 'indexArtist',
+        beforeEnter: goIndexArtist,
+        component: indexArtist,
     },
     {
         path: '/allAlbum',

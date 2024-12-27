@@ -58,25 +58,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="info-playlist">
-      <div class="title1">
-        <span class="topic">Dang theo doi</span>
-      </div>
-      <div class="container">
-        <div
-          v-for="(artist, index) in artists"
-          :key="index"
-          class="item-artist"
-        >
-          <img
-            class="img-item-artist"
-            :src="require('/src/assets/mtp.jpeg')"
-            alt=""
-          />
-          <span class="name-artist">{{ artist.name }}</span>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -91,9 +72,9 @@ export default {
   data() {
     return {
       artistId: "",
-      playlists:{},
-      artists:{},
-      albums:{}
+      playlists: {},
+      artists: {},
+      albums: {},
     };
   },
   methods: {

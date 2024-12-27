@@ -11,8 +11,8 @@
         <span class="genre"></span>
         <span class="name-music">{{ musics.music_name }}</span>
         <div class="name">
-          <span class="name-artist">{{ musics.artist_name }}  </span>  |
-          <span class="stage-name"> {{ musics.stage_name }} </span>
+          <span class="name-artist">{{ musics.artist_name }} </span>
+          <span class="stage-name"> | {{ musics.stage_name }} </span>
           <img
             class="more-function"
             :src="require('/src/assets/3dot2.png')"
@@ -21,32 +21,24 @@
         </div>
       </div>
     </div>
-    <div class="function">
-      <!-- <img
-        class="play-function"
-        :src="require('/src/assets/play.png')"
-        alt=""
-        @click="togglePlay"
-      />
-      egerg -->
-    </div>
+    <div class="function"></div>
     <div class="recommend">
       <div class="heading-recommend">
         <span class="recommend">Những bài nhạc gợi ý</span>
-        <span class="more-recommend">Xem thêm</span>
       </div>
       <div class="list-recommend">
-        <div class="item-recommend" v-for="(list, index) in lists" :key="index">
-          <img
-            class="img-item-recommend"
-            :src="require('/src/assets/mtp.jpeg')"
-            alt=""
-          />
+        <div
+          class="item-recommend"
+          v-for="(SuggestedMusic, index) in SuggestedMusics.slice(0, 8)"
+          :key="index"
+        >
           <img
             class="img-play-recommend"
-            :src="require('/src/assets/play2.png')"
+            :src="'data:image/jpeg;base64,' + SuggestedMusic.music_img"
           />
-          <span class="name-item-recommend">{{ list.name }}</span>
+          <span class="name-item-recommend">{{
+            SuggestedMusic.music_name
+          }}</span>
         </div>
       </div>
     </div>
@@ -60,22 +52,7 @@ export default {
     return {
       audioSrc: null,
       musics: {},
-      song: {
-        name: "Hết thương cạn gió",
-        artist: "CCMK",
-        image: "/src/assets/cover1.jpeg",
-        duration: 240,
-      },
-      lists: [
-        { name: "Playlist 2" },
-        { name: "Playlist 2" },
-        { name: "Playlist 2" },
-        { name: "Playlist 2" },
-        { name: "Playlist 2" },
-        { name: "Playlist 2" },
-        { name: "Playlist 2" },
-        { name: "Playlist 2" },
-      ],
+      SuggestedMusics: [],
     };
   },
   mounted() {
@@ -89,6 +66,7 @@ export default {
       if (this.musics && this.musics.musicAudio) {
         // Kiểm tra nếu dữ liệu hợp lệ
         this.playThisSong(); // Gọi phát nhạc
+        await this.getSuggestedMusicResponse();
       }
     },
     async togglePlay() {
@@ -99,18 +77,14 @@ export default {
       );
       const musicData = response.data;
       if (musicData && musicData.musicAudio) {
-        // Tạo dữ liệu bài hát mới và gửi tới store
         const newMusic = {
           audio: musicData.musicAudio,
           name: musicData.music_name,
           artist: musicData.artist_name,
         };
-        // Gọi action trong Vuex để phát bài hát mới
         await this.$store.dispatch("playSong", newMusic);
-
-        // Đổi trạng thái "isPlaying" nếu cần
         this.toggleIsPlaying();
-      } // Đổi trạng thái isPlaying
+      }
     },
 
     async playThisSong() {
@@ -129,6 +103,15 @@ export default {
         `http://localhost:8080/api/music/getIndexMusicArtist/${musicId}`
       );
       this.musics = response.data;
+    },
+    async getSuggestedMusicResponse() {
+      const response = await axios.get(
+        "http://localhost:8080/api/music/getSuggestedMusicResponse",
+        {
+          params: { artistId: this.musics.artist_id },
+        }
+      );
+      this.SuggestedMusics = response.data;
     },
   },
 };
@@ -191,10 +174,12 @@ export default {
   margin: 10px 0 0 0;
 }
 .heading-recommend {
+  text-align: left;
   font-family: Arial, Helvetica, sans-serif;
   color: #ffffff;
   font-size: 14px;
   padding: 0 10px 0 15px;
+
 }
 .more-recommend {
   margin: 0 0 0 1190px;
@@ -212,11 +197,11 @@ export default {
   height: 170px;
   justify-content: center;
   justify-items: center;
-  padding: 10px;
+  padding: 10px 10px 50px 10px ;
   width: 150px;
 }
 .item-recommend:hover {
-  background: #c5bebe;
+  background: #565656;
   height: 170px;
   justify-content: center;
   justify-items: center;
@@ -228,14 +213,15 @@ export default {
   border-radius: 5px;
 }
 .img-play-recommend {
-  width: 50px;
-  height: 50px;
-  margin: 50px 0 0 -95px;
-  position: absolute;
-  opacity: 0; /* Ẩn đi ban đầu */
-  transition: opacity 0.1s ease; /* Thêm hiệu ứng mượt khi hiện ra */
+  width: 150px;
+  height: 150px;
+
 }
-.item-recommend:hover .img-play-recommend {
-  opacity: 1; /* Hiện ra khi di chuột vào item-recommend */
+
+.img-play-recommend:hover {
+  width: 150px;
+  height: 150px;
+
 }
+
 </style>

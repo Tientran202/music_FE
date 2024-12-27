@@ -11,7 +11,12 @@
           <span>{{ album.artist_name }}</span>
         </div>
         <div class="control">
-          <img class="img-play" :src="require('/src/assets/play.png')" alt="" />
+          <img
+            @click="playAllSongs"
+            class="img-play"
+            :src="require('/src/assets/play.png')"
+            alt=""
+          />
           <img
             class="img-3dot"
             :src="require('/src/assets/3dot2.png')"
@@ -49,6 +54,14 @@
 import axios from "axios";
 import { mapActions } from "vuex";
 export default {
+  data() {
+    return {
+      indexMusicResults: {},
+      albumId: "",
+      album: {},
+      audioMusics: [],
+    };
+  },
   created() {
     this.getIndexAlbum().then(() => {
       this.getMusicByAlbumId();
@@ -56,6 +69,16 @@ export default {
   },
   methods: {
     ...mapActions(["playSong", "toggleIsPlaying", "togglePlayPause"]),
+
+    playAllSongs() {
+      if (this.indexMusicResults.length > 0) {
+        this.$store.dispatch("addAlbumToQueue", this.audioMusics);
+        this.$store.dispatch("playSong", this.audioMusics[0]); // Phát bài đầu tiên
+        alert(this.audioMusics);
+      } else {
+        console.error("Danh sách bài hát trống!");
+      }
+    },
 
     async initMusicPlayer() {
       await this.getIndexMusic(); // Lấy dữ liệu bài hát
@@ -110,18 +133,14 @@ export default {
             }
           );
           this.indexMusicResults = response.data;
+          for (let i = 0; i < this.indexMusicResults.length; i++) {
+            this.audioMusics.push(this.indexMusicResults[i].audio); // Thêm từng phần tử vào audioMusics
+          }
         } catch (error) {
           console.error("Error fetching search results:", error);
         }
       }
     },
-  },
-  data() {
-    return {
-      indexMusicResults: {},
-      albumId: "",
-      album: {},
-    };
   },
 };
 </script>
@@ -143,6 +162,10 @@ export default {
   display: flex;
   flex-direction: column;
   margin: 0 0 0 20px;
+}
+.table-row{
+  padding: 10px ;
+  border-radius: 10px 0 0 10px ;
 }
 img {
   width: 200px;
@@ -166,6 +189,7 @@ img {
 }
 .img-play {
   width: 70px;
+  cursor: pointer;
 }
 .img-3dot {
   width: 50px;

@@ -3,12 +3,14 @@
     <div class="container-lists">
       <div class="playlist-container">
         <div class="title-container">
-          <div class="title">Album</div>
-          <a v-if="!showAll" class="view-all">Xem tất cả</a>
+          <div class="title">Album hàng đầu cho bạn</div>
+          <a v-if="!showAll" @click="goToTopAlbum" class="view-all"
+            >Xem tất cả</a
+          >
         </div>
         <div class="playlist-wrapper">
           <div
-            v-for="(TopAlbum, index) in listTopAlbums"
+            v-for="(TopAlbum, index) in listTopAlbums.slice(0, 8)"
             :key="index"
             class="playlist-item"
             @click="indexAlbum(TopAlbum.id)"
@@ -18,18 +20,21 @@
               alt="playlist cover"
               class="playlist-cover"
             />
-            <p>{{ TopAlbum.album_name }}</p>
+            <p class="album_name">album: {{ TopAlbum.album_name }}</p>
+            <p class="stage-name">{{ TopAlbum.stage_name }}</p>
           </div>
         </div>
       </div>
       <div class="playlist-container">
         <div class="title-container">
           <div class="title">Bài nhạc mới</div>
-          <a v-if="!showAll" class="view-all">Xem tất cả</a>
+          <a v-if="!showAll" @click="goToNewMusic" class="view-all"
+            >Xem tất cả</a
+          >
         </div>
         <div class="playlist-wrapper">
           <div
-            v-for="(listNewMusic, index) in listNewMusics"
+            v-for="(listNewMusic, index) in listNewMusics.slice(0, 8)"
             :key="index"
             class="playlist-item"
             @click="navigateToMusic(listNewMusic.id)"
@@ -39,7 +44,6 @@
               alt="playlist cover"
               class="playlist-cover"
             />
-
             <p>{{ listNewMusic.name_music }}</p>
           </div>
         </div>
@@ -47,11 +51,13 @@
       <div class="playlist-container">
         <div class="title-container">
           <div class="title">Bài nhạc gần đây</div>
-          <a v-if="!showAll" class="view-all">Xem tất cả</a>
+          <a v-if="!showAll" @click="goRecentMusic" class="view-all"
+            >Xem tất cả</a
+          >
         </div>
         <div class="playlist-wrapper">
           <div
-            v-for="(recentlyMusic, index) in recentlyMusics"
+            v-for="(recentlyMusic, index) in recentlyMusics.slice(0, 8)"
             :key="index"
             class="playlist-item"
             @click="navigateToMusic(recentlyMusic.id)"
@@ -68,7 +74,9 @@
       <div class="playlist-container">
         <div class="title-container">
           <div class="title">Hàng đầu cho bạn</div>
-          <a v-if="!showAll" class="view-all">Xem tất cả</a>
+          <a v-if="!showAll" @click="goRecentMusic" class="view-all"
+            >Xem tất cả</a
+          >
         </div>
         <div class="playlist-wrapper">
           <div
@@ -91,12 +99,12 @@
           <div class="title">Nghệ sĩ gần đây</div>
           <a v-if="!showAll" class="view-all">Xem tất cả</a>
         </div>
-        <div class="playlist-wrapper">
+        <div class="playlist-wrapper" >
           <div
-            v-for="(popularArtist, index) in popularArtists"
+            v-for="(popularArtist, index) in popularArtists.slice(0, 8)"
             :key="index"
             class="playlist-item"
-            @click="indexMusic(popularArtist.id)"
+            @click="goToArtistDetail(popularArtist.id)"
           >
             <img
               :src="'data:image/jpeg;base64,' + popularArtist.avatar"
@@ -119,12 +127,6 @@ export default {
       listNewMusics: [],
       recentlyMusics: [],
       popularArtists: [],
-      genres: [
-        { genre_id: 1, genre: "Trữ tình" },
-        { genre_id: 2, genre: "Pop" },
-        { genre_id: 3, genre: "Rock" },
-        { genre_id: 4, genre: "Jazz" },
-      ], // Chứa danh sách thể loại nhạc
       imageSrc: null,
       categories: ["pop", "rap", "O&B"],
       showAll: false, // Trạng thái hiển thị (giới hạn hoặc tất cả)
@@ -150,9 +152,7 @@ export default {
       limit: 8, // Số lượng playlist hiển thị ban đầu
     };
   },
-  // created() {
-  //   this.fetchGenres(); // Gọi API khi component được tạo
-  // },
+
   computed: {
     visiblePlaylists() {
       // Nếu showAll là true, hiển thị tất cả playlist
@@ -168,6 +168,22 @@ export default {
       );
       this.listTopAlbums = response.data;
     },
+    goToTopAlbum() {
+      this.$router.push({ path: "/AllAlbum" });
+    },
+    goToNewMusic() {
+      this.$router.push({ path: "/allNewMusic" });
+    },
+    goRecentMusic() {
+      this.$router.push({ path: "/allNewMusic" });
+    },
+    goToArtistDetail(artistId) {
+      this.$router.push({ name: "informationA", params: { id: artistId } });
+    },
+    goPopulartionArtist() {
+      this.$router.push({ path: "/allPopularArtist" });
+    },
+    
 
     async getNewMusic() {
       const response = await axios.get(
@@ -208,11 +224,10 @@ export default {
     indexMusic() {
       this.$router.push({ path: "/" });
     },
-    indexAlbum(albumId){
+    indexAlbum(albumId) {
       this.$router.push(`/indexAlbum/${albumId}`);
     },
     navigateToMusic(musicId) {
-      // Dẫn tới trang hiển thị chi tiết music với index
       this.$router.push(`/index/${musicId}`);
     },
     async fetchImage() {
@@ -257,18 +272,30 @@ button {
   font-family: Arial, Helvetica, sans-serif;
   background-color: #121212;
   border-radius: 10px;
+  height: 1600px;
 }
-
-p {
-  color: rgb(204, 194, 194);
+.playlist-container {
+  width: 99%;
+  margin: 0 0 0 10px;
+}
+.album_name {
+  color: rgb(255, 255, 255);
   text-align: left;
+  font-size: 16px;
+  margin: 0;
 }
-.container-lists{
+.stage-name {
+  font-size: 12px;
+  margin: 0px 0 0 0;
+  text-align: left;
+  color: #817474;
+}
+.container-lists {
   padding: 70px 0 0 0;
 }
 .title-container {
   color: rgb(255, 255, 255);
-  width: 1424px;
+  width: 1410px;
   display: flex;
   justify-content: space-between;
 }
@@ -294,7 +321,7 @@ p {
   width: 150px;
   height: 150px;
 }
-.img-artist{
+.img-artist {
   border-radius: 90px;
   width: 150px;
   height: 150px;
@@ -302,5 +329,6 @@ p {
 .playlist-wrapper {
   display: flex;
   margin: 5px 0 0 0;
+  padding: 15px 0px;
 }
 </style>

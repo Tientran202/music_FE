@@ -21,7 +21,12 @@
         />
       </header>
       <div class="image-user-container">
-        <img :src="require('/src/assets/user.png')" alt="" class="image-user" />
+        <img
+          :src="require('/src/assets/user.png')"
+          alt=""
+          class="image-user"
+          @click="goToIndex"
+        />
       </div>
     </div>
     <main class="content">
@@ -43,7 +48,14 @@ export default {
       // Chuyển hướng tới trang Home
       this.$router.push("/");
     },
-     onSearch() {
+    async goToIndex() {
+      const role = localStorage.getItem("role");
+      if (role == "artist") {
+        alert("lo");
+        this.$router.push("/indexArtist");
+      }
+    },
+    onSearch() {
       // Điều hướng khi nhấn Enter
       if (this.searchKeyword.trim()) {
         this.$router.push({
@@ -52,7 +64,7 @@ export default {
         });
       }
     },
-      clearSearch() {
+    clearSearch() {
       // Làm trống giá trị input khi click vào ảnh
       this.searchKeyword = "";
     },

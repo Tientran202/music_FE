@@ -19,7 +19,7 @@ export default {
 </script>
 <style scoped>
 .menu {
-    margin: -10px 0 0 0 ;
+    margin: -10px 0 0 10px ;
     padding: 30px 0 20px 0;
   position: fixed;
   background: #121212;

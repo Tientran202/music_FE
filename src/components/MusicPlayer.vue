@@ -8,6 +8,7 @@
       class="audio"
       @timeupdate="updateTime"
       @loadedmetadata="loadMetadata"
+      @ended="playNext"
     >
       <source :src="audioSrc" type="audio/mpeg" />
     </audio>
@@ -89,7 +90,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["togglePlayPause"]),
+    ...mapActions(["togglePlayPause"], ["playNext"]),
+    playNext() {
+      this.$store.dispatch("playNext");
+    },
     togglePlayPause() {
       const audio = this.$refs.audio;
       if (this.isPlaying) {
