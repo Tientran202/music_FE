@@ -1,18 +1,20 @@
-
-
 <template>
-  <div class="title">Tất cả nghệ sĩ phổ biến</div>
+  <div class="title">
+    Tất cả danh sách nhạc của
+    <span class="artist-name-span" @click="goToIndexArtist">{{
+      artists.artist_name
+    }}</span>
+  </div>
   <div class="container">
     <div
-      v-for="(popularArtist, index) in popularArtists"
+      v-for="(playlist, index) in playlists"
       :key="index"
       class="playlist-container"
-      @click="goToArtistDetail(popularArtist.id)"
+      @click="navigateTopPlaylist(playlist.playlist_id)"
     >
-      <img :src="'data:image/jpeg;base64,' + popularArtist.avatar" alt="" />
+      <img :src="'data:image/jpeg;base64,' + playlist.playlist_img" alt="" />
       <div class="information-playlist">
-        <!-- <span class="title1">{{ popularArtist.name_music }}</span> -->
-        <span class="title2">{{ popularArtist.stage_name }}</span>
+        <span class="title1">{{ playlist.playlist_name }}</span>
       </div>
     </div>
   </div>
@@ -22,26 +24,43 @@ import axios from "axios";
 export default {
   data() {
     return {
-      popularArtists: [],
+      playlists: "",
+      artistId: "",
+      artists: [],
     };
   },
   created() {
-    this.getPopularArtist();
+    this.getPlaylistByArtistId();
+    this.getIndexArtist();
   },
   methods: {
-    goToArtistDetail(artistId) {
-      this.$router.push({ name: "indexArtist", params: { id: artistId } });
-    },
-    async getPopularArtist() {
-      const response = await axios.post(
-        "http://localhost:8080/api/user/popularArtist",
-        {
-          id: localStorage.getItem("userId"),
-        }
-      );
-      this.popularArtists = response.data;
+    navigateTopPlaylist(playlist) {
+      this.$router.push(`/playlist/${playlist}`);
     },
 
+    async getPlaylistByArtistId() {
+      this.artistId = this.$route.params.id;
+      const response = await axios.get(
+        "http://localhost:8080/api/playlist/getPlaylistByArtistId",
+        {
+          params: { artistId: this.artistId },
+        }
+      );
+      this.playlists = response.data;
+    },
+    goToIndexArtist() {
+      this.$router.push(`/indexArtist/${this.$route.params.id}`);
+    },
+    async getIndexArtist() {
+      this.userId = this.$route.params.id;
+      const response = await axios.get(
+        "http://localhost:8080/api/user/getIndexArtist",
+        {
+          params: { artistId: this.userId },
+        }
+      );
+      this.artists = response.data;
+    },
   },
 };
 </script>
@@ -63,6 +82,13 @@ export default {
   font-size: 25px;
   font-weight: bold;
   text-align: left;
+  color: #cdcdcd;
+}
+.artist-name-span {
+  cursor: pointer;
+}
+.artist-name-span:hover {
+  color: rgb(255, 255, 255);
 }
 .playlist-container {
   display: flex;
@@ -79,7 +105,7 @@ export default {
 img {
   width: 150px;
   height: 150px;
-  border-radius: 90px;
+  border-radius: 5px;
 }
 .information-playlist {
   display: flex;

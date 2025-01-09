@@ -1,5 +1,5 @@
 <template>
-  <div class="title">Tất cả bài nhạc hàng đầu cho bạn</div>
+  <div class="title">Tất cả bài nhạc mới hàng đầu cho bạn</div>
   <div class="container">
     <div
       v-for="(playlist, index) in listNewMusics"

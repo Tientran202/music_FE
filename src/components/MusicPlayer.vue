@@ -14,11 +14,12 @@
     </audio>
     <div class="controls">
       <div class="controls-button">
-        <img class="mix-music" :src="require('/src/assets/mix.png')" alt="" />
+        <!-- <img class="mix-music" :src="require('/src/assets/mix.png')" alt="" /> -->
         <img
           class="previous-music"
           :src="require('/src/assets/previous.png')"
           alt=""
+          @click="playPrevious"
         />
         <img
           :src="
@@ -31,13 +32,18 @@
           @click="togglePlayPause"
         />
 
-        <img class="next-music" :src="require('/src/assets/next.png')" alt="" />
         <img
+          class="next-music"
+          :src="require('/src/assets/next.png')"
+          alt=""
+          @click="playNext"
+        />
+        <!-- <img
           :src="require('/src/assets/loop.png')"
           alt="Loop"
           class="loop-button"
           @click="toggleLoop"
-        />
+        /> -->
       </div>
 
       <input
@@ -90,9 +96,16 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["togglePlayPause"], ["playNext"]),
+    ...mapActions(["togglePlayPause"], ["playNext"], ["playPrevious"]),
     playNext() {
       this.$store.dispatch("playNext");
+    },
+    playPrevious() {
+      this.$store.dispatch("playPrevious"); // Gọi action để chuyển bài nhạc trước
+      const audio = this.$refs.audio;
+      if (audio && this.isPlaying) {
+        audio.play(); // Tiếp tục phát bài trước đó nếu đang phát
+      }
     },
     togglePlayPause() {
       const audio = this.$refs.audio;
@@ -170,6 +183,7 @@ export default {
   justify-content: center;
   align-items: center;
   flex: 2; /* Đảm bảo controls nằm giữa */
+  margin: 0 0 0 -750px;
 }
 .audio {
   position: absolute; /* Tách rời khỏi luồng bình thường */

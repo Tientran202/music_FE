@@ -12,7 +12,6 @@
 <script>
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
-
 export default {
   props: {
     visibl: {
@@ -46,16 +45,10 @@ export default {
             this.cropper.destroy();
           }
           this.cropper = new Cropper(imageElement, {
-            aspectRatio: 1,
+            aspectRatio: 1 / 2,
             viewMode: 1,
             dragMode: "move",
             cropBoxResizable: true,
-            ready() {
-              // Thêm lớp CSS tùy chỉnh vào crop box
-              const cropBox =
-                this.cropper.cropper.querySelector(".cropper-view-box");
-              cropBox.style.borderRadius = "50%"; // Làm tròn vùng crop
-            },
           });
         }
       });
@@ -63,14 +56,15 @@ export default {
     cropImage() {
       if (this.cropper) {
         const canvas = this.cropper.getCroppedCanvas({
-          width: 200,
-          height: 200,
+          width: 400,
+          height: 800,
         });
         const croppedImage = canvas.toDataURL("image/png");
         this.$emit("crop-complete", croppedImage);
         this.imageSrc = null;
         this.cropper.destroy();
       }
+      this.$emit("close");
     },
     cancelCrop() {
       this.imageSrc = null;
@@ -105,11 +99,22 @@ export default {
   position: relative;
 }
 
-.confirm-button,
+.confirm-button {
+  position: absolute;
+  top: 10px;
+  left:35%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
 .cancel-button {
   position: absolute;
   top: 10px;
-  left: 50%;
+  left: 70%;
   transform: translateX(-50%);
   padding: 10px 20px;
   background-color: #4caf50;

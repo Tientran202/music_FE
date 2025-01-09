@@ -3,17 +3,12 @@
     <div class="header">
       <img
         class="img-playlist"
-        :src="'data:image/jpeg;base64,' + album.img"
+        :src="'data:image/jpeg;base64,' + playlist.img"
         alt=""
       />
       <div class="info-user-container">
-        <span class="album-title">Album</span>
-        <span class="name-playlist">{{ album.album_name }}</span>
-        <div class="info2">
-          <span>{{ formatDate(album.replease_day) }}</span>
-          |
-          <span>{{ album.artist_name }}</span>
-        </div>
+        <span class="album-title">Playlist</span>
+        <span class="name-playlist">{{ playlist.album_name }}</span>
         <div class="control">
           <img
             @click="playAllSongs"
@@ -49,7 +44,7 @@
             :src="'data:image/jpeg;base64,' + music.img"
             alt=""
           />
-          <span class="link-music-name">{{ music.music_name }}</span>
+          <span class="music-name-span" @click="goToIndexMusic(music.id)">{{ music.music_name }}</span>
         </li>
         <li class="duration">{{ music.duration }}</li>
       </ul>
@@ -63,8 +58,8 @@ export default {
   data() {
     return {
       indexMusicResults: {},
-      albumId: "",
-      album: {},
+      playlistId: "",
+      playlist: {},
       audioMusics: [],
     };
   },
@@ -82,7 +77,6 @@ export default {
 
     playAllSongs() {
       if (this.indexMusicResults.length > 0) {
-        // Gọi action playAllSongs để phát toàn bộ album
         this.$store.dispatch("playAllSongs", this.indexMusicResults);
       } else {
         console.error("Danh sách bài hát trống!");
@@ -95,6 +89,9 @@ export default {
       }
     },
 
+    goToIndexMusic(musicId) {
+      this.$router.push(`/index/${musicId}`);
+    },
     async initMusicPlayer() {
       await this.getIndexMusic(); // Lấy dữ liệu bài hát
       if (this.musics && this.musics.musicAudio) {
@@ -116,20 +113,20 @@ export default {
           name: musicData.music_name,
           artist: musicData.artist_name,
         };
-
-
+        // Gọi action trong Vuex để phát bài hát mới
         await this.$store.dispatch("playSong", newMusic);
 
+        // Đổi trạng thái "isPlaying" nếu cần
         this.toggleIsPlaying();
-      }
+      } // Đổi trạng thái isPlaying
     },
     async getIndexAlbum() {
-      const albumId = this.$route.params.id;
+      const playlistId = this.$route.params.id;
       const response = await axios.get(
-        `http://localhost:8080/api/album/getIndexAlbum/${albumId}`
+        `http://localhost:8080/api/playlist/getIndexPlaylist/${playlistId}`
       );
-      this.album = response.data;
-      this.albumId = this.album.id;
+      this.playlist = response.data;
+      this.playlistId = this.playlist.id;
     },
     formatDate(date) {
       const options = {
@@ -139,12 +136,12 @@ export default {
     },
 
     async getMusicByAlbumId() {
-      if (this.albumId) {
+      if (this.playlistId) {
         try {
           const response = await axios.get(
-            "http://localhost:8080/api/music/getMusicByAlbumId",
+            "http://localhost:8080/api/music/getMusicByPlaylistId",
             {
-              params: { albumId: this.albumId },
+              params: { playlistId: this.playlistId },
             }
           );
           this.indexMusicResults = response.data;
@@ -187,9 +184,6 @@ img {
   width: 200px;
   border-radius: 8px;
 }
-.link-music-name:hover {
-  color: rgb(60, 57, 255);
-}
 .name-playlist {
   font-size: 40px;
   font-weight: bold;
@@ -198,11 +192,14 @@ img {
 .album-title {
   text-align: left;
 }
+.music-name-span:hover{
+color: #ffffff;
+}
 .info2 {
   text-align: left;
 }
 .control {
-  margin: 35px 0 0 0;
+  margin: 70px 0 0 0;
   display: flex;
   align-items: center;
 }

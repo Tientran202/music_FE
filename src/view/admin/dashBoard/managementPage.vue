@@ -30,7 +30,7 @@ export default {
 .content {
   height: 2000px;
   width: 100%;
-  padding: 0 0 0 360px;
+  padding: 0 0 100px 360px;
   background: #008fa2a6;
   position: relative;
   z-index: 1; 

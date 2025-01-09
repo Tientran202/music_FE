@@ -73,7 +73,7 @@ export default {
       const musicId = this.$route.params.id;
       // Lấy thông tin bài hát từ API
       const response = await axios.get(
-        `http://localhost:8080/api/music/getIndexMusicArtist/${musicId}`
+        `http://localhost:8080/api/music/getIndexMusicByMusicIdForAdmin/${musicId}`
       );
       const musicData = response.data;
       if (musicData && musicData.musicAudio) {
@@ -100,13 +100,13 @@ export default {
       const musicId = this.$route.params.id;
       // Kiểm tra genreId, nếu không hợp lệ thì bỏ qua
       const response = await axios.get(
-        `http://localhost:8080/api/music/getIndexMusicArtist/${musicId}`
+        `http://localhost:8080/api/music/getIndexMusicByMusicIdForAdmin/${musicId}`
       );
       this.musics = response.data;
     },
     async getSuggestedMusicResponse() {
       const response = await axios.get(
-        "http://localhost:8080/api/music/getSuggestedMusicResponse",
+        "http://localhost:8080/api/music/getSuggestedMusicForAdminResponse",
         {
           params: { artistId: this.musics.artist_id },
         }
@@ -179,7 +179,6 @@ export default {
   color: #ffffff;
   font-size: 14px;
   padding: 0 10px 0 15px;
-
 }
 .more-recommend {
   margin: 0 0 0 1190px;
@@ -197,7 +196,7 @@ export default {
   height: 170px;
   justify-content: center;
   justify-items: center;
-  padding: 10px 10px 50px 10px ;
+  padding: 10px 10px 50px 10px;
   width: 150px;
 }
 .item-recommend:hover {
@@ -215,13 +214,10 @@ export default {
 .img-play-recommend {
   width: 150px;
   height: 150px;
-
 }
 
 .img-play-recommend:hover {
   width: 150px;
   height: 150px;
-
 }
-
 </style>

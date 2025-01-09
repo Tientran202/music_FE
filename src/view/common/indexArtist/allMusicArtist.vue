@@ -1,18 +1,20 @@
-
-
 <template>
-  <div class="title">Tất cả nghệ sĩ phổ biến</div>
+  <div class="title">
+    Tất cả bài nhạc của
+    <span class="artist-name-span" @click="goToIndexArtist">{{
+      artists.artist_name
+    }}</span>
+  </div>
   <div class="container">
     <div
-      v-for="(popularArtist, index) in popularArtists"
+      v-for="(music, index) in musics"
       :key="index"
       class="playlist-container"
-      @click="goToArtistDetail(popularArtist.id)"
+      @click="navigateToMusic(music.music_id)"
     >
-      <img :src="'data:image/jpeg;base64,' + popularArtist.avatar" alt="" />
+      <img :src="'data:image/jpeg;base64,' + music.music_img" alt="" />
       <div class="information-playlist">
-        <!-- <span class="title1">{{ popularArtist.name_music }}</span> -->
-        <span class="title2">{{ popularArtist.stage_name }}</span>
+        <span class="title1">{{ music.music_name }}</span>
       </div>
     </div>
   </div>
@@ -22,26 +24,42 @@ import axios from "axios";
 export default {
   data() {
     return {
-      popularArtists: [],
+      musics: "",
+      userId: "",
+      artists: [],
     };
   },
   created() {
-    this.getPopularArtist();
+    this.getMusicByArtistId();
+    this.getIndexArtist();
   },
   methods: {
-    goToArtistDetail(artistId) {
-      this.$router.push({ name: "indexArtist", params: { id: artistId } });
+    navigateToMusic(musicId) {
+      this.$router.push(`/index/${musicId}`);
     },
-    async getPopularArtist() {
-      const response = await axios.post(
-        "http://localhost:8080/api/user/popularArtist",
+    goToIndexArtist() {
+      this.$router.push(`/indexArtist/${this.$route.params.id}`);
+    },
+    async getIndexArtist() {
+      this.userId = this.$route.params.id;
+      const response = await axios.get(
+        "http://localhost:8080/api/user/getIndexArtist",
         {
-          id: localStorage.getItem("userId"),
+          params: { artistId: this.userId },
         }
       );
-      this.popularArtists = response.data;
+      this.artists = response.data;
     },
-
+    async getMusicByArtistId() {
+      this.userId = this.$route.params.id;
+      const response = await axios.get(
+        "http://localhost:8080/api/music/getAllMusicByArtistId",
+        {
+          params: { artistId: this.userId },
+        }
+      );
+      this.musics = response.data;
+    },
   },
 };
 </script>
@@ -63,6 +81,7 @@ export default {
   font-size: 25px;
   font-weight: bold;
   text-align: left;
+  color: #cdcdcd;
 }
 .playlist-container {
   display: flex;
@@ -79,14 +98,19 @@ export default {
 img {
   width: 150px;
   height: 150px;
-  border-radius: 90px;
+  border-radius: 5px;
 }
 .information-playlist {
   display: flex;
   flex-direction: column;
   margin: 10px 0 0 0;
 }
-
+.artist-name-span {
+  cursor: pointer;
+}
+.artist-name-span:hover {
+  color: rgb(255, 255, 255);
+}
 .title1 {
   text-align: left;
   font-size: 14px;

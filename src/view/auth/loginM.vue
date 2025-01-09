@@ -43,7 +43,7 @@
       </div>
       <p id="signup">
         Bạn chưa có tài khoản
-        <a href="#">đăng kí ngay</a>
+        <a href="/signup">đăng kí ngay</a>
       </p>
       <div v-if="errorMessage" id="message">
         <img
@@ -89,7 +89,7 @@ export default {
                 );
                 const role = response.data.role;
                 if (role == "admin") {
-                  this.$router.push("/dashboard");
+                  this.$router.push("/dashboard/statisticalManage");
                 } else {
                   this.$router.push("/");
                 }
@@ -111,7 +111,7 @@ export default {
 <style scoped>
 #background {
   background-color: #4e9350;
-  height: 800px;
+  height: 1000px;
   padding: 30px 0 0 0;
 }
 

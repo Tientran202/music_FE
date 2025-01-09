@@ -16,14 +16,84 @@
     <div class="request-container">
       <div class="title2">
         <span class="stage-name">Nhập nghệ danh của bạn</span>
-        <input type="text" placeholder="Nhập nghệ danh" />
+        <input v-model="stageName" type="text" placeholder="Nhập nghệ danh" />
       </div>
-      <div class="btn-container">
+      <div @click="becomeArtist" class="btn-container">
         <button>Tôi muốn thành ca sĩ</button>
       </div>
     </div>
   </div>
 </template>
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      stageName: "",
+    };
+  },
+  methods: {
+    async becomeArtist() {
+      const accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+      const stageName = this.stageName;
+
+      try {
+        if (this.stageName) {
+          const response = await axios.get(
+            "http://localhost:8080/api/auth/check-token",
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+          if (response.status === 200) {
+            const userId = response.data.userId;
+            if (userId == localStorage.getItem("userId")) {
+              const response = await axios.patch(
+                "http://localhost:8080/api/user/requestBecomeArtist",
+                null,
+                {
+                  params: {
+                    userId,
+                    stageName,
+                  },
+                }
+              );
+              if (response.status == 200) {
+                alert(response.data);
+                this.$router.push({ path: "/informationActor" });
+              }
+            }
+          }
+        }
+        else{
+          alert("Hãy nhập nghệ danh của bạn");
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          console.warn("Access token hết hạn hoặc không hợp lệ.");
+          try {
+            const refreshResponse = await axios.post(
+              "http://localhost:8080/api/auth/refresh-token",
+              { refresh_token: refreshToken }
+            );
+            if (refreshResponse.status === 200) {
+              const newAccessToken = refreshResponse.data.access_token;
+              localStorage.setItem("accessToken", newAccessToken);
+              // eslint-disable-next-line no-undef
+              store.dispatch("setAuthenticated", true);
+            }
+          } catch (refreshError) {
+            console.error("Không thể làm mới token:", refreshError.message);
+            alert("Vui lòng đăng nhập lại.");
+          }
+        } else {
+          alert("Đã xảy ra lỗi:", error);
+        }
+      }
+    },
+  },
+};
+</script>
+
 <style scoped>
 .container {
   display: flex;

@@ -4,6 +4,7 @@
       class="artist-container"
       v-for="(searchResult, index) in searchResults"
       :key="index"
+      @click="goToIndexArtist(searchResult.id)"
     >
       <img
         class="img-artist"
@@ -22,6 +23,7 @@
   padding: 10px;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 13px;
+  padding: 20px 0 150px 0;
 }
 .artist-container {
   display: flex;
@@ -30,6 +32,7 @@
   justify-content: center;
   height: 250px;
   border-radius: 10px;
+  cursor: pointer;
 }
 .artist-container:hover {
   background: #42424260;
@@ -72,7 +75,11 @@ export default {
         }
       }
     },
+    goToIndexArtist(artistId) {
+      this.$router.push(`/indexArtist/${artistId}`);
+    },
   },
+
   data() {
     return {
       keyword: this.$route.query.keyword || "",

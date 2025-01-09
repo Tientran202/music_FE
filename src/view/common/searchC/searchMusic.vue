@@ -9,6 +9,7 @@
       class="music"
       v-for="(searchResult, index) in searchResults"
       :key="index"
+      @click="goToIndexMusic(searchResult.id)"
     >
       <li class="stt">{{ index + 1 }}</li>
       <li class="title-container">
@@ -61,14 +62,16 @@ export default {
         }
       }
     },
-
-    
+    goToIndexMusic(musicId) {
+      this.$router.push(`/index/${musicId}`);
+    },
   },
 };
 </script>
 
 <style scoped>
 .music-container {
+  padding: 50px 0 100px 0;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -121,6 +124,10 @@ li {
   text-align: left;
   font-size: 15px;
   font-weight: bold;
+  cursor: pointer;
+}
+.title:hover {
+  color: #ffffff;
 }
 .name-artist {
   margin: 5px 0 0 0;

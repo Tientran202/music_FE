@@ -15,22 +15,26 @@
       <li class="container-btn"></li>
     </ul>
     <div class="line"></div>
-    <ul class="ul-content" v-for="(reportedMuisc, index) in reportedMuiscs" :key="index">
-      <li class="index">{{ index+1 }}</li>
-      <li class="nameMusic">
-        <a href="">{{ reportedMuisc.music_name }}</a>
+    <ul
+      class="ul-content"
+      v-for="(reportedMuisc, index) in reportedMuiscs"
+      :key="index"
+    >
+      <li class="index">{{ index + 1 }}</li>
+      <li class="nameMusic" @click="goToIndexMusic(reportedMuisc.music_id)">
+        {{ reportedMuisc.music_name }}
       </li>
       <li class="nameArtist">
-        <a href="">{{ reportedMuisc.artist }}</a>
+        {{ reportedMuisc.artist }}
       </li>
       <li class="namOfUserReporting">
-        <a href="">{{ reportedMuisc.reported_name }}</a>
+        {{ reportedMuisc.reported_name }}
       </li>
-      <li class="time">{{formatDate(reportedMuisc.day) }}</li>
+      <li class="time">{{ formatDate(reportedMuisc.day) }}</li>
       <li class="contentReported">{{ reportedMuisc.report_content }}</li>
       <li class="container-btn">
-        <button>Ẩn</button>
-        <button>Huỷ</button>
+        <button @click="hiddenMusic(reportedMuisc.report_id)">Ẩn</button>
+        <button @click="hiddenReport(reportedMuisc.report_id)">Huỷ</button>
       </li>
       <div class=""></div>
     </ul>
@@ -38,15 +42,14 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 export default {
-  created(){
+  created() {
     this.fetchReportedUsers();
   },
   data() {
     return {
-      reportedMuiscs: [
-      ],
+      reportedMuiscs: [],
     };
   },
   methods: {
@@ -60,6 +63,53 @@ export default {
         console.error(error);
       }
     },
+    async hiddenReport(reportId) {
+      try {
+        const formData = new FormData();
+        formData.append("reportId", reportId);
+        const response = await fetch(
+          "http://localhost:8080/api/admin/hiddenReportMusic",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        if (response.ok) {
+          alert("Đã huỷ báo cáo");
+          this.fetchReportedUsers();
+        } else {
+          alert("Huỷ báo cáo không thành công");
+        }
+      } catch (error) {
+        console.error("Error uploading music:", error);
+        alert("Có lỗi xảy ra khi tải bài hát lên.");
+      }
+    },
+    goToIndexMusic(musicId) {
+      this.$router.push(`/index/${musicId}`);
+    },
+    async hiddenMusic(reportId) {
+      try {
+        const formData = new FormData();
+        formData.append("reportId", reportId);
+        const response = await fetch(
+          "http://localhost:8080/api/admin/hiddenMusic",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        if (response.ok) {
+          alert("Đã ẩn bài nhạc");
+          this.fetchReportedUsers();
+        } else {
+          alert("Huỷ báo cáo không thàh công");
+        }
+      } catch (error) {
+        console.error("Error uploading music:", error);
+        alert("Có lỗi xảy ra khi tải bài hát lên.");
+      }
+    },
     formatDate(date) {
       const options = {
         year: "numeric",
@@ -71,7 +121,6 @@ export default {
       return new Date(date).toLocaleString("vi-VN", options);
     },
   },
-  
 };
 </script>
 <style scoped>
@@ -118,6 +167,7 @@ li {
   justify-content: center;
 }
 .nameMusic {
+  cursor: pointer;
   width: 15%;
 }
 .nameArtist {

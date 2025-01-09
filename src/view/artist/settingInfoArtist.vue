@@ -9,7 +9,7 @@
           alt="Cropped Image"
           style="margin-top: 20px; max-width: 300px"
         />
-        <ImageCropper
+        <img-crop-info
           v-if="showCropperComponent"
           @crop-complete="handleCropComplete"
           @close="handleCloseCropper"
@@ -24,64 +24,14 @@
       </div>
       <div class="input1">
         <span>Tên</span>
-        <input v-model="name" type="text" placeholder="Nhập tên mới" />
+        <input type="text" v-model="name" placeholder="Nhập tên mới" />
       </div>
-      <!-- <div class="input1">
-        <span>Link liên kết mạng xã hội</span>
-        <input type="text" placeholder="Nhập link mới" />
-      </div> -->
-      <!-- <div class="input2">
-        <div class="dob-container">
-          <label for="dob-day">Ngày sinh:</label>
-          <div class="dob-picker">
-            <select class="select2" v-model="selectedDay" id="dob-day">
-              <option disabled value="">Ngày</option>
-              <option v-for="day in days" :key="day" :value="day">
-                {{ day }}
-              </option>
-            </select>
-
-            <select
-              class="select1"
-              v-model="selectedMonth"
-              @change="updateDays"
-              id="dob-month"
-            >
-              <option disabled value="">Tháng</option>
-              <option
-                v-for="(month, index) in months"
-                :key="index"
-                :value="index + 1"
-              >
-                {{ month }}
-              </option>
-            </select>
-
-            <select
-              class="select1"
-              v-model="selectedYear"
-              @change="updateDays"
-              id="dob-year"
-            >
-              <option disabled value="">Năm</option>
-              <option v-for="year in years" :key="year" :value="year">
-                {{ year }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div> -->
-      <!-- <div class="input1">
-        <span>Giới tính</span>
-        <select class="select-gender" name="gender" id="gender">
-          <option value="male">Nam</option>
-          <option value="female">Nữ</option>
-          <option value="other">Khác</option>
-        </select>
-      </div> -->
-      <button @click="updateProfile" class="button-edit">Cập nhật</button>
+      <div class="input1">
+        <span>Nghệ danh</span>
+        <input type="text" v-model="artistName" placeholder="Nhập tên mới" />
+      </div>
+      <button class="button-edit" @click="updateProfile">Cập nhật</button>
     </div>
-
     <div class="setting-components">
       <span class="title-info">Thay đổi mật khẩu</span>
       <div class="input1">
@@ -107,48 +57,29 @@
 
 <script>
 import axios from "axios";
-import ImageCropper from "/src/view/artist/components/imgCropMusic.vue";
+import ImgCropInfo from "./components/imgCropInfo.vue";
 
 export default {
   components: {
-    ImageCropper,
+    ImgCropInfo,
   },
   created() {
-    // this.populateYears();
-    // this.updateDays();
     this.getIndexArtist();
   },
   data() {
     return {
       showCropperComponent: false,
-      croppedImage: require("@/assets/mtp.jpeg"),
-      imageSrc: null,
-      selectedDay: "",
-      selectedMonth: "",
-      selectedYear: "",
-      days: [],
-      name: "",
-      oldPass: "",
+      croppedImage: null, // Hình ảnh đã cắt
+      imageSrc: null, // Dữ liệu gốc hình ảnh
+      name: "", // Tên người dùng
+      artistName: "", // Nghệ danh
       newPass: "",
-      userId: "",
       reNewPass: "",
-      months: [
-        "Tháng 1",
-        "Tháng 2",
-        "Tháng 3",
-        "Tháng 4",
-        "Tháng 5",
-        "Tháng 6",
-        "Tháng 7",
-        "Tháng 8",
-        "Tháng 9",
-        "Tháng 10",
-        "Tháng 11",
-        "Tháng 12",
-      ],
-      years: [],
+      oldPass: "",
+      artists: "",
     };
   },
+
   methods: {
     async getIndexArtist() {
       this.userId = localStorage.getItem("userId");
@@ -158,9 +89,20 @@ export default {
           params: { artistId: this.userId },
         }
       );
-      this.user = response.data;
-      this.croppedImage = "data:image/jpeg;base64," + this.user.artist_image;
+      this.artists = response.data;
+      this.croppedImage = 'data:image/jpeg;base64,' + this.artists.artist_image
     },
+    handleCloseCropper() {
+      this.showCropperComponent = false; // Ẩn cropper khi sự kiện đóng được phát ra
+    },
+    showCropper() {
+      this.showCropperComponent = true;
+    },
+    handleCropComplete(croppedImage) {
+      this.croppedImage = croppedImage; // Lưu ảnh đã cắt
+      this.showCropperComponent = false; // Đóng cropper
+    },
+
     async updatePass() {
       try {
         const accessToken = localStorage.getItem("accessToken");
@@ -189,7 +131,6 @@ export default {
               );
               if (responseUpdatePass.status == 200) {
                 alert("Cập nhật mật khẩu thành công");
-                this.$router.push({ path: "/informationActor" });
               }
               if (responseUpdatePass.status == 500) {
                 alert("Nhập sai mật khẩu cũ");
@@ -203,17 +144,46 @@ export default {
         alert(error);
       }
     },
-    handleCloseCropper() {
-      this.showCropperComponent = false; // Ẩn cropper khi sự kiện đóng được phát ra
-    },
-    showCropper() {
-      this.showCropperComponent = true;
-    },
-    handleCropComplete(croppedImage) {
-      this.croppedImage = croppedImage;
-      this.showCropperComponent = false;
+    // Phương thức gửi thông tin lên backend
+    async updateProfile() {
+      try {
+        const userId = localStorage.getItem("userId");
+        const formData = new FormData();
+        formData.append("userId", userId); // Thêm tên người dùng
+        formData.append("name", this.name); // Thêm tên người dùng
+        formData.append("artistName", this.artistName); // Thêm nghệ danh
+
+        // Nếu có ảnh đã cắt, gửi ảnh dưới dạng base64 hoặc file
+        if (this.croppedImage) {
+          const imageFile = this.base64ToFile(this.croppedImage, "image.png");
+          formData.append("image", imageFile);
+          alert("id: " + imageFile);
+        }
+
+        alert("id: " + userId);
+        alert("id: " + this.name);
+        alert("id: " + this.artistName);
+        // Gửi request POST lên server
+        const response = await fetch(
+          "http://localhost:8080/api/user/updateProfile",
+          {
+            method: "PATCH",
+            body: formData,
+          }
+        );
+
+        const result = await response.json();
+        if (response.ok) {
+          alert("Cập nhật thành công!");
+        } else {
+          alert("Cập nhật thất bại: " + result.message);
+        }
+      } catch (error) {
+        alert(error);
+      }
     },
 
+    // Chuyển đổi Base64 sang File (nếu cần)
     base64ToFile(base64Data, fileName) {
       const byteCharacters = atob(base64Data.split(",")[1]);
       const byteArrays = [];
@@ -229,61 +199,19 @@ export default {
 
       return new File(byteArrays, fileName, { type: "image/png" });
     },
-    async updateProfile() {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        const response = await axios.get(
-          "http://localhost:8080/api/auth/check-token",
-          { headers: { Authorization: `Bearer ${accessToken}` } }
-        );
-        if (response.status === 200) {
-          if (this.name || this.croppedImage) {
-            const userId = localStorage.getItem("userId");
-            const formData = new FormData();
-            formData.append("userId", userId);
-            formData.append("name", this.name);
-            // formData.append("artistName", this.artistName);
-
-            if (this.croppedImage) {
-              const imageFile = this.base64ToFile(
-                this.croppedImage,
-                "image.png"
-              );
-              formData.append("image", imageFile);
-            }
-            const response = await fetch(
-              "http://localhost:8080/api/user/updateProfileUser",
-              {
-                method: "PATCH",
-                body: formData,
-              }
-            );
-            const result = response.data;
-            if (response.ok) {
-              alert("Cập nhật thành công!");
-            } else {
-              alert("Cập nhật thất bại: " + result);
-            }
-            this.$router.push({ path: "/informationActor" });
-          } else {
-            alert("Chưa nhập tên hoặc ảnh");
-          }
-        }
-      } catch (error) {
-        alert(error);
-      }
-    },
   },
 };
 </script>
+
+
 <style scoped>
 .setting-container {
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: column;
   width: 370px;
-  height: 1880px;
-  margin: 0 0 0 42%;
+  height: 1000px;
+  margin: 0 0 0 39%;
   color: #dadada;
 }
 .setting-components {
@@ -291,9 +219,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-.button-edit {
-  cursor: pointer;
 }
 .button-upload-img {
   margin: 0 0 0 0;
@@ -310,8 +235,8 @@ export default {
   flex-direction: column;
 }
 .input2 {
-  text-align: left;
-  gap: 10px;
+  align-items: center;
+  width: 315px;
 }
 .select-gender {
   width: 80px;

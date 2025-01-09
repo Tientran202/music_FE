@@ -19,15 +19,17 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      numberMusic: "320",
-      numberArtist: "200",
-      numberUser: "222",
-      numberAlbum: "200",
+      numberMusic: "",
+      numberArtist: "",
+      numberUser: "",
+      numberAlbum: "",
     };
   },
+
   name: "GoogleChart",
   props: {
     chartData: {
@@ -44,6 +46,12 @@ export default {
       type: String,
       default: "Số lượng người dùng và thời lượng nghe",
     },
+  },
+  created() {
+    this.getNumberOfMusic();
+    this.getNumberOfArtist();
+    this.getNumberOfUser();
+    this.getNumberOfAlbum();
   },
   mounted() {
     // Load Google Charts
@@ -68,6 +76,46 @@ export default {
       const chart = new google.visualization.ColumnChart(this.$refs.chart);
       chart.draw(data, options);
     },
+    async getNumberOfMusic() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/music/getNumberOfMusic"
+        );
+        this.numberMusic = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getNumberOfArtist() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/user/getNumberOfArtist"
+        );
+        this.numberArtist = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getNumberOfUser() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/user/getNumberOfUser"
+        );
+        this.numberUser = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getNumberOfAlbum() {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/album/getNumberOfAlbum"
+        );
+        this.numberAlbum = response.data;
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
 };
 </script>
@@ -75,7 +123,7 @@ export default {
 <style scoped>
 #chart-container {
   background: #ffffff;
-  height: 100%;
+  height: 1000px;
   color: #000000;
   padding: 10px 0 0 350px;
   font-family: Arial, Helvetica, sans-serif;

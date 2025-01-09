@@ -97,14 +97,16 @@
       <div class="playlist-container">
         <div class="title-container">
           <div class="title">Nghệ sĩ gần đây</div>
-          <a v-if="!showAll" class="view-all">Xem tất cả</a>
+          <a v-if="!showAll" @click="goToAllPopularArtist" class="view-all"
+            >Xem tất cả</a
+          >
         </div>
-        <div class="playlist-wrapper" >
+        <div class="playlist-wrapper">
           <div
             v-for="(popularArtist, index) in popularArtists.slice(0, 8)"
             :key="index"
             class="playlist-item"
-            @click="goToArtistDetail(popularArtist.id)"
+            @click="indexArtist(popularArtist.id)"
           >
             <img
               :src="'data:image/jpeg;base64,' + popularArtist.avatar"
@@ -130,25 +132,6 @@ export default {
       imageSrc: null,
       categories: ["pop", "rap", "O&B"],
       showAll: false, // Trạng thái hiển thị (giới hạn hoặc tất cả)
-      playlists: [
-        { name: "Playlist 1", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 2", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 3", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 4", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 5", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 6", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 7", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 8", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 1", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 2", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 3", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 4", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 5", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 6", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 7", cover: "https://via.placeholder.com/150" },
-        { name: "Playlist 8", cover: "https://via.placeholder.com/150" },
-        // Thêm nhiều playlist ở đây
-      ],
       limit: 8, // Số lượng playlist hiển thị ban đầu
     };
   },
@@ -157,8 +140,8 @@ export default {
     visiblePlaylists() {
       // Nếu showAll là true, hiển thị tất cả playlist
       return this.showAll
-        ? this.playlists
-        : this.playlists.slice(0, this.limit);
+        ? this.listNewMusics
+        : this.listNewMusics.slice(0, this.limit);
     },
   },
   methods: {
@@ -175,7 +158,7 @@ export default {
       this.$router.push({ path: "/allNewMusic" });
     },
     goRecentMusic() {
-      this.$router.push({ path: "/allNewMusic" });
+      this.$router.push({ path: "/allRecentMusic" });
     },
     goToArtistDetail(artistId) {
       this.$router.push({ name: "informationA", params: { id: artistId } });
@@ -183,7 +166,6 @@ export default {
     goPopulartionArtist() {
       this.$router.push({ path: "/allPopularArtist" });
     },
-    
 
     async getNewMusic() {
       const response = await axios.get(
@@ -200,11 +182,12 @@ export default {
       );
       this.recentlyMusics = response.data;
     },
+
     async getPopularArtist() {
       const response = await axios.post(
         "http://localhost:8080/api/user/popularArtist",
         {
-          id: localStorage.getItem("userId"),
+          id: localStorage.getItem("accountId"),
         }
       );
       this.popularArtists = response.data;
@@ -221,11 +204,17 @@ export default {
     showAllPlaylists() {
       this.showAll = true; // Thay đổi trạng thái để hiển thị tất cả playlist
     },
+    goToAllPopularArtist() {
+      this.$router.push({ path: "/allPopularArtist" });
+    },
     indexMusic() {
       this.$router.push({ path: "/" });
     },
     indexAlbum(albumId) {
       this.$router.push(`/indexAlbum/${albumId}`);
+    },
+    indexArtist(artistId) {
+      this.$router.push(`/indexArtist/${artistId}`);
     },
     navigateToMusic(musicId) {
       this.$router.push(`/index/${musicId}`);

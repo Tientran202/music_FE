@@ -23,7 +23,7 @@
       <li class="stage-name">{{ requestToBecomeArtist.stage_name }}</li>
       <li class="time">{{ requestToBecomeArtist.time_request_artist }}</li>
       <li class="btn">
-        <button>Chấp nhận</button>
+        <button @click="acceptRequestArtist(requestToBecomeArtist.id)">Chấp nhận</button>
         <button>Huỷ</button>
       </li>
     </ul>
@@ -36,6 +36,28 @@ export default {
     this.fetchRequestToBecomeArtist();
   },
   methods: {
+    async acceptRequestArtist(reportId) {
+      try {
+        const formData = new FormData();
+        formData.append("userId", reportId);
+        const response = await fetch(
+          "http://localhost:8080/api/admin/acceptRequestArtist",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        if (response.ok) {
+          alert("Đã chấp nhận yêu cầu");
+          this.fetchRequestToBecomeArtist();
+        } else {
+          alert("lỗi");
+        }
+      } catch (error) {
+        console.error("Error uploading music:", error);
+        alert("Có lỗi xảy ra khi tải bài hát lên.");
+      }
+    },
     async fetchRequestToBecomeArtist() {
       try {
         const response = await axios.get(

@@ -20,12 +20,14 @@
           @keydown.enter="onSearch"
         />
       </header>
-      <div class="image-user-container">
+      <div v-if="!admin" class="image-user-container" @click="goToIndex">
+        <img :src="require('/src/assets/user.png')" alt="" class="image-user" />
+      </div>
+      <div v-if="admin" class="image-user-container" @click="goToDashboard">
         <img
-          :src="require('/src/assets/user.png')"
+          :src="require('/src/assets/data-analytics.png')"
           alt=""
-          class="image-user"
-          @click="goToIndex"
+          class="image-data"
         />
       </div>
     </div>
@@ -40,10 +42,24 @@ export default {
   name: "App",
   data() {
     return {
+      admin: false,
       searchKeyword: decodeURIComponent(this.$route.query.keyword || ""), // Lấy từ query param nếu có
     };
   },
+  created() {
+    this.showAdmin();
+  },
   methods: {
+    showAdmin() {
+      const role = localStorage.getItem("role");
+      if (role == "admin") {
+        this.admin = true;
+      }
+    },
+    async goToDashboard() {
+      // Chuyển hướng tới trang Home
+      this.$router.push("/dashboard/musicReported");
+    },
     async goHome() {
       // Chuyển hướng tới trang Home
       this.$router.push("/");
@@ -51,10 +67,72 @@ export default {
     async goToIndex() {
       const role = localStorage.getItem("role");
       if (role == "artist") {
-        alert("lo");
-        this.$router.push("/indexArtist");
+        this.$router.push("/informationArtist");
+      } else {
+        if (role == "user") {
+          this.$router.push("/informationActor");
+        }
+        this.$router.push("/informationActor");
       }
     },
+    // async goToIndex() {
+    //   const accessToken = localStorage.getItem("accessToken");
+    //   const refreshToken = localStorage.getItem("refreshToken");
+
+    //   // Kiểm tra token
+    //   if (!accessToken) {
+    //     alert("Đăng nhập trước khi thực hiện");
+    //     this.$router.push("/login");
+    //     return; // Dừng nếu accessToken không tồn tại
+    //   }
+    //   try {
+    //     // Gửi yêu cầu xác thực token
+    //     const response = await axios.get(
+    //       "http://localhost:8080/api/auth/check-token",
+    //       { headers: { Authorization: `Bearer ${accessToken}` } }
+    //     );
+    //     if (response.status === 200) {
+    //       const role = response.data.role;
+    //       if (role === "artist") {
+    //         const userId = response.data.userId;
+    //         alert(userId);
+    //         this.$router.push({
+    //           name: "informationA",
+    //         });
+    //         localStorage.setItem("userId", userId);
+    //         return; // Dừng lại sau khi điều hướng
+    //       }
+    //     }
+    //   } catch (error) {
+    //     // Xử lý lỗi nếu token không hợp lệ hoặc hết hạn
+    //     if (error.response && error.response.status === 401) {
+    //       alert("Access token hết hạn hoặc không hợp lệ.");
+    //       try {
+    //         // Yêu cầu làm mới token
+    //         const refreshResponse = await axios.post(
+    //           "http://localhost:8080/api/auth/refresh-token",
+    //           { refresh_token: refreshToken }
+    //         );
+
+    //         if (refreshResponse.status === 200) {
+    //           const newAccessToken = refreshResponse.data.access_token;
+    //           localStorage.setItem("accessToken", newAccessToken);
+    //           this.$router.push("/indexArtist");
+    //         }
+    //       } catch (refreshError) {
+    //         console.error("Không thể làm mới token:", refreshError.message);
+    //         alert("Vui lòng đăng nhập lại.");
+    //         this.$router.push("/login");
+    //       }
+    //     } else {
+    //       // Xử lý lỗi khác
+    //       console.error("Đã xảy ra lỗi:", error);
+    //       alert("Đã xảy ra lỗi. Vui lòng thử lại.");
+    //       this.$router.push("/login");
+    //     }
+    //   }
+    // },
+
     onSearch() {
       // Điều hướng khi nhấn Enter
       if (this.searchKeyword.trim()) {
@@ -128,6 +206,7 @@ export default {
   padding-left: 9px;
 } */
 .image-user-container {
+  cursor: pointer;
   width: 40px;
   height: 40px;
   background: #2c2c2c;
@@ -141,10 +220,15 @@ export default {
   width: 20px;
   height: 20px;
   object-fit: cover;
+  cursor: pointer;
 }
 .content {
   margin: 60px -20px -20px -10px;
   background: #121212;
   min-height: 1000px;
+}
+.image-data {
+  width: 30px;
+  height: 30px;
 }
 </style>

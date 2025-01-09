@@ -14,44 +14,37 @@
           <span class="name">{{ artists.artist_name }}</span>
         </div>
         <div class="dsp-ntd-container">
-          <span>{{ artists.album_count }} album</span> |
-          <span>{{ artists.playlist_count }} danh sách phát</span> |
-          <span>{{ artists.music_count }} bài nhạc</span> |
-          <span>{{ artists.flow_count }} người theo dõi</span>
+          <span @click="goToAllAlbumArtist"
+            >{{ artists.album_count }} album</span
+          >
+          |
+          <span @click="goToAllPlaylistArtist"
+            >{{ artists.playlist_count }} danh sách phát</span
+          >
+          | <span>{{ artists.flow_count }} người theo dõi</span> |
+          <span @click="goToAllMusicArtist"
+            >{{ artists.music_count }} bài nhạc</span
+          >
         </div>
-        <div class="setting-container">
-          <img
-            class="img-setting"
-            :src="require('/src/assets/setting.png')"
-            alt=""
-            @click="goToSetting"
-          />
-          <img
-            @click="FunctionDisplay"
-            class="img-add"
-            :src="require('/src/assets/add.png')"
-            alt=""
-          />
-        </div>
-        <functionDisplay
-          v-if="isFunctionDisplay"
-          @create-album="onCreateAlbum"
-          @create-playlist="onCreatePlaylist"
-          @add-music="onAddMusic"
-          @create-story="onCreateStory"
-        />
+        <button
+          class="btn-flow"
+          @click="isFollowing ? unflowArtist() : flowArtist()"
+        >
+          {{ isFollowing ? "Bỏ theo dõi" : "Theo dõi" }}
+        </button>
+        <div class="setting-container"></div>
       </div>
     </div>
     <div class="info-playlist">
       <div class="title1">
-        <span class="topic">Album</span>
+        <span class="topic" @click="goToAllAlbumArtist"> Album </span>
       </div>
       <div class="container">
         <div
           v-for="(album, index) in albums"
           :key="index"
           class="item"
-          @click="goToAlbum(album.album_id)"
+          @click="navigateToAlbum(album.album_id)"
         >
           <img
             class="img-item-playlist"
@@ -64,14 +57,16 @@
     </div>
     <div class="info-playlist">
       <div class="title1">
-        <span class="topic">Danh sách phát công khai</span>
+        <span class="topic" @click="goToAllPlaylistArtist"
+          >Danh sách phát công khai</span
+        >
       </div>
       <div class="container">
         <div
           v-for="(list, index) in playlists.slice(0, 7)"
           :key="index"
           class="item"
-          @click="goToPlayList(list.playlist_id)"
+          @click="navigateTopPlaylist(list.playlist_id)"
         >
           <img
             class="img-item-playlist"
@@ -84,30 +79,15 @@
     </div>
     <div class="info-playlist">
       <div class="title1">
-        <span class="topic">Bài nhạc</span>
+        <span @click="goToAllMusicArtist" class="topic">Bài nhạc</span>
       </div>
-      <!-- confir;
-    private boolean hidden; -->
       <div class="container">
         <div
           v-for="(music, index) in musics.slice(0, 7)"
           :key="index"
           class="item"
-          @click="goToMusic(music.music_id)"
+          @click="goToIndexMusic(music.music_id)"
         >
-          <img
-            v-if="music.hidden"
-            class="flag-img"
-            :src="require('/src/assets/finish.png')"
-            alt=""
-          />
-          <img
-            v-if="!music.confir"
-            class="block-img"
-            :src="require('/src/assets/block.png')"
-            alt=""
-          />
-
           <img
             class="img-item-playlist"
             :src="'data:image/jpeg;base64,' + music.music_img"
@@ -122,18 +102,17 @@
 
 <script>
 import axios from "axios";
-import functionDisplay from "./components/functionDisplay.vue";
 export default {
-  components: { functionDisplay },
   data() {
     return {
+      isFollowing: false,
       playlists: [],
       musics: [],
       artists: [],
       albums: [],
       userId: "",
       limit: 7,
-      isFunctionDisplay: false,
+      artistId: "",
     };
   },
   created() {
@@ -141,6 +120,7 @@ export default {
     this.getAlbumByArtistId();
     this.getPlaylistByArtistId();
     this.getMusicByArtistId();
+    this.getFollowStatus();
   },
   computed: {
     visiblePlaylists() {
@@ -151,24 +131,90 @@ export default {
     },
   },
   methods: {
+    async flowArtist() {
+      const artistId = this.$route.params.id;
+      const userId = localStorage.getItem("userId");
+      const response = await axios.post(
+        "http://localhost:8080/api/follow/followArtist",
+        null,
+        {
+          params: {
+            artistId: artistId,
+            userId: userId,
+          },
+        }
+      );
+      if (response.status == 200) {
+        this.isFollowing = !this.isFollowing;
+        alert("Đã theo dõi");
+      }
+    },
+    navigateToAlbum(albumId) {
+      this.$router.push(`/indexAlbum/${albumId}`);
+    },
+    async getFollowStatus() {
+      this.artistId = this.$route.params.id; // Lấy artistId từ URL route
+      const userId = localStorage.getItem("userId"); // Lấy userId từ localStorage
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/follow/getFollow",
+          {
+            params: {
+              userId: userId,
+              artistId: this.artistId,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          const isFollowing = response.data; // API trả về boolean
+          console.log("Follow status:", isFollowing);
+          // Tùy chỉnh trạng thái UI dựa vào giá trị isFollowing
+          this.isFollowing = isFollowing;
+        }
+      } catch (error) {
+        console.error("Error while checking follow status:", error);
+        alert("Failed to get follow status.");
+      }
+    },
+
+    async unflowArtist() {
+      const artistId = this.$route.params.id;
+      const userId = localStorage.getItem("userId");
+      const response = await axios.patch(
+        "http://localhost:8080/api/follow/unFlowArtist",
+        null,
+        {
+          params: {
+            userId: userId,
+            artistId: artistId,
+          },
+        }
+      );
+      if (response.status == 200) {
+        this.isFollowing = !this.isFollowing;
+        alert("Đã bỏ theo dõi");
+      }
+    },
+    navigateTopPlaylist(playlist) {
+      this.$router.push(`/playlist/${playlist}`);
+    },
+    goToAllPlaylistArtist() {
+      this.$router.push({ path: `/allPlaylistArtist/${this.artistId}` });
+    },
+    goToAllAlbumArtist() {
+      this.$router.push({ path: `/allAlbumArtist/${this.artistId}` });
+    },
+    goToAllMusicArtist() {
+      this.$router.push({ path: `/allMusicArtist/${this.artistId}` });
+    },
     goToSetting() {
       this.$router.push({ path: "/settingInfoArtist" });
     },
-    goToAlbum(albumId) {
-      this.$router.push(`/indexAlbum/${albumId}`);
-    },
-    goToPlayList(playlistId) {
-      this.$router.push(`/playlist/${playlistId}`);
-    },
-    goToMusic(musicId) {
-      this.$router.push(`/index/${musicId}`);
-    },
-    FunctionDisplay() {
-      this.isFunctionDisplay = !this.isFunctionDisplay;
-    },
+    
 
     async getIndexArtist() {
-      this.userId = localStorage.getItem("userId");
+      this.userId = this.$route.params.id;
       const response = await axios.get(
         "http://localhost:8080/api/user/getIndexArtist",
         {
@@ -180,17 +226,19 @@ export default {
 
     async getAlbumByArtistId() {
       const response = await axios.get(
-        "http://localhost:8080/api/album/getAlbumByArtistId",
+        "http://localhost:8080/api/album/getAlbumByArtistIdlimit",
         {
           params: { artistId: this.userId },
         }
       );
       this.albums = response.data;
     },
-
+    goToIndexMusic(musicId) {
+      this.$router.push(`/index/${musicId}`);
+    },
     async getPlaylistByArtistId() {
       const response = await axios.get(
-        "http://localhost:8080/api/playlist/getPlaylistByArtistId",
+        "http://localhost:8080/api/playlist/getPlaylistByArtistIdLimit",
         {
           params: { artistId: this.userId },
         }
@@ -199,7 +247,7 @@ export default {
     },
     async getMusicByArtistId() {
       const response = await axios.get(
-        "http://localhost:8080/api/music/getAllMusicCByArtistId",
+        "http://localhost:8080/api/music/getMusicByArtistId",
         {
           params: { artistId: this.userId },
         }
@@ -212,7 +260,7 @@ export default {
 
 <style scoped>
 .info-container {
-  height: 1090px;
+  height: 1400px;
   flex-direction: column;
   display: flex;
   color: white;
@@ -232,7 +280,24 @@ export default {
   text-align: left;
   margin: 10px 0 0 30px;
 }
+.btn-flow {
+  background: #009959;
+  border-radius: 7.5px;
+  width: 120px;
+  height: 35px;
+  border: 0px;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+}
 
+.btn-flow:active {
+  background: #037545;
+  border: 1px solid #000000;
+  font-size: 13px;
+}
+.dsp-ntd-container{
+  cursor: pointer;
+}
 .topic {
   font-size: 20px;
   font-weight: bold;
@@ -244,6 +309,7 @@ export default {
   margin: 0 0 0 40px;
 }
 .title1 {
+  cursor: pointer;
   text-align: left;
 }
 .name {
@@ -254,17 +320,24 @@ export default {
   margin: 20px 0 0 50px;
 }
 .container {
+  margin: 10px 0 0 0;
   display: flex;
   width: 100%;
-  gap: 40px;
+  gap: 15px;
   text-align: left;
-}
-.item {
   cursor: pointer;
+}
+
+.item {
   display: flex;
   flex-direction: column;
-  margin: 10px 0 10px 0;
+  padding: 10px 10px 40px 10px;
+  border-radius: 10px;
 }
+.item:hover {
+  background: #323131;
+}
+
 .item-artist {
   margin: 10px 20px 10px 20px;
   display: flex;
@@ -302,18 +375,6 @@ export default {
   width: 160px;
   height: 160px;
   border-radius: 10px;
-}
-.flag-img {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  margin: 5px 0 0 5px;
-}
-.block-img {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  margin: 5px 0 0 5px;
 }
 .img-item-artist {
   width: 160px;

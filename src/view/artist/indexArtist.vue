@@ -33,6 +33,7 @@
         <span class="topic">Album</span>
       </div>
       <div class="container">
+        
         <div v-for="(album, index) in albums" :key="index" class="item">
           <img
             class="img-item-playlist"
@@ -72,9 +73,9 @@ export default {
   data() {
     return {
       artistId: "",
-      playlists: {},
-      artists: {},
-      albums: {},
+      playlists: [],
+      artists: [],
+      albums: [],
     };
   },
   methods: {

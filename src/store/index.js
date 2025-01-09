@@ -1,122 +1,88 @@
-import { createStore } from 'vuex';
+import { createStore } from "vuex";
 
 export default createStore({
   state: {
-    currentSong: null,
-    isPlaying: false,
-    audioSrc: null, // Chứa URL đối tượng của audio
+    currentSong: null, // Bài hát hiện tại
+    isPlaying: false, // Trạng thái phát nhạc
+    audioSrc: null, // URL nguồn audio
     isAuthenticated: true, // Trạng thái xác thực
-    queue: [],         // Danh sách hàng đợi bài hát
+    queue: [], // Hàng đợi bài hát
   },
 
   mutations: {
-    //album
     setQueue(state, songs) {
-      state.queue = songs;
+      state.queue = songs; // Đặt danh sách bài hát
     },
-    playNextSong(state) {
-      if (state.queue.length > 0) {
-        const nextSong = state.queue.shift(); // Lấy bài hát đầu tiên
-        state.currentSong = nextSong;         // Cập nhật bài hát hiện tại
-    
-        if (nextSong.audio) {
-          let audioBlob;
-          if (typeof nextSong.audio === 'string') {
-            audioBlob = new Blob(
-              [new Uint8Array(atob(nextSong.audio).split('').map(c => c.charCodeAt(0)))],
-              { type: 'audio/mpeg' }
-            );
-          } else if (Array.isArray(nextSong.audio)) {
-            audioBlob = new Blob([new Uint8Array(nextSong.audio)], { type: 'audio/mpeg' });
-          }
-    
-          state.audioSrc = URL.createObjectURL(audioBlob);
+    setCurrentSong(state, song) {
+      state.currentSong = song; // Đặt bài hát hiện tại
+      if (song.audio) {
+        let audioBlob;
+        if (typeof song.audio === "string") {
+          audioBlob = new Blob(
+            [new Uint8Array(atob(song.audio).split("").map((c) => c.charCodeAt(0)))],
+            { type: "audio/mpeg" }
+          );
+        } else if (Array.isArray(song.audio)) {
+          audioBlob = new Blob([new Uint8Array(song.audio)], { type: "audio/mpeg" });
         }
-    
-        state.isPlaying = true;
-      } else {
-        state.currentSong = null;  // Không còn bài hát để phát
-        state.audioSrc = null;
-        state.isPlaying = false;
+
+        state.audioSrc = URL.createObjectURL(audioBlob); // Tạo URL từ Blob
       }
+      state.isPlaying = true; // Bắt đầu phát nhạc
     },
-    nextSong({ commit }) {
-      commit("playNextSong"); // Phát bài tiếp theo
+    togglePlayPause(state) {
+      state.isPlaying = !state.isPlaying; // Chuyển đổi trạng thái phát nhạc
     },
-
-    SET_AUTHENTICATED(state, value) {
-      state.isAuthenticated = value; // Cập nhật trạng thái trang chu "/"
-    },
-
     resetPlayer(state) {
       state.currentSong = null;
       state.isPlaying = false;
       state.audioSrc = null;
     },
-    setIsPlaying(state, status) {
-      state.isPlaying = status;
-    },
-    setSong(state, song) {
-      state.currentSong = song;
-
-      if (song.audio) {
-        // Chuyển dữ liệu audio (byte array hoặc base64) thành Blob và tạo URL từ Blob
-        let audioBlob;
-        if (typeof song.audio === 'string') {  // Nếu song.audio là base64
-          audioBlob = new Blob([new Uint8Array(atob(song.audio).split('').map(c => c.charCodeAt(0)))], { type: 'audio/mpeg' });
-        } else if (Array.isArray(song.audio)) {  // Nếu song.audio là byte array
-          audioBlob = new Blob([new Uint8Array(song.audio)], { type: 'audio/mpeg' });
-        }
-
-        state.audioSrc = URL.createObjectURL(audioBlob);  // Tạo đối tượng URL cho audio
-      }
-
-      state.isPlaying = true;
-    },
-
-    togglePlayPause(state) {
-      state.isPlaying = !state.isPlaying;
-    },
-
   },
 
   actions: {
-
-    setAuthenticated({ commit }, value) {
-      commit("SET_AUTHENTICATED", value); // Gọi mutation để cập nhật cho "/"
+    playSong({ commit }, song) {
+      commit("setCurrentSong", song); // Phát bài hát mới
+    },
+    playNext({ commit, state }) {
+      const currentIndex = state.queue.findIndex((song) => song.id === state.currentSong.id);
+      if (currentIndex !== -1 && currentIndex < state.queue.length - 1) {
+        const nextSong = state.queue[currentIndex + 1];
+        commit("setCurrentSong", nextSong); // Phát bài hát tiếp theo
+      } else {
+        console.warn("Không còn bài hát tiếp theo!");
+      }
+    },
+    playPrevious({ commit, state }) {
+      const currentIndex = state.queue.findIndex((song) => song.id === state.currentSong.id);
+      if (currentIndex > 0) {
+        const previousSong = state.queue[currentIndex - 1];
+        commit("setCurrentSong", previousSong); // Phát bài hát trước đó
+      } else {
+        console.warn("Không còn bài hát trước đó!");
+      }
+    },
+    playAllSongs({ commit }, albumSongs) {
+      commit("setQueue", albumSongs); // Đặt album vào hàng đợi
+      commit("setCurrentSong", albumSongs[0]); // Phát bài hát đầu tiên trong album
+    },
+    addSongsToQueue({ commit, state }, songs) {
+      const updatedQueue = [...state.queue, ...songs];
+      commit("setQueue", updatedQueue); // Thêm bài hát vào hàng đợi
+    },
+    togglePlayPause({ commit }) {
+      commit("togglePlayPause"); // Dừng hoặc tiếp tục phát
     },
     resetPlayer({ commit }) {
-      commit('resetPlayer');
-    },
-
-    toggleIsPlaying({ commit, state }) {
-      commit("setIsPlaying", !state.isPlaying);
-    },
-    playSong({ commit }, song) {
-      commit('setSong', song);
-    },
-    
-    togglePlayPause({ commit }) {
-      commit('togglePlayPause'); // Gọi mutation togglePlayPause
-    },
-
-    stopSong({ commit }) {
-      commit('clearSong'); // Gọi mutation để dừng và xóa bài hát
-    },
-    addAlbumToQueue({ commit }, albumSongs) {
-      commit("setQueue", albumSongs); // Đặt album vào hàng đợi
-    },
-    
-    playNext({ commit }) {
-      commit("playNextSong"); // Phát bài tiếp theo
+      commit("resetPlayer"); // Reset trình phát nhạc
     },
   },
 
   getters: {
-    isAuthenticated: (state) => state.isAuthenticated, // Lấy trạng thái xác thực "/"
-    currentSong: (state) => state.currentSong,
-    isPlaying: (state) => state.isPlaying,
-    audioSrc: (state) => state.audioSrc,
-    queue: (state) => state.queue,
+    isAuthenticated: (state) => state.isAuthenticated, // Trạng thái xác thực
+    currentSong: (state) => state.currentSong, // Lấy bài hát hiện tại
+    isPlaying: (state) => state.isPlaying, // Trạng thái phát nhạc
+    audioSrc: (state) => state.audioSrc, // URL nguồn âm thanh
+    queue: (state) => state.queue, // Hàng đợi bài hát
   },
 });

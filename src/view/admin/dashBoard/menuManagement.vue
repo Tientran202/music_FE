@@ -71,6 +71,14 @@
       <img :src="require('/src/assets/user1.png')" alt="" />
       <span>Danh sách người nghe</span>
     </router-link>
+    <router-link
+      class="router"
+      to="/dashboard/allMusicUnconfirmed"
+      :class="{ active: $route.name === 'allMusicUnconfirmed' }"
+    >
+      <img :src="require('/src/assets/musical-note.png')" alt="" />
+      <span>Danh sách bài nhạc cần duyệt</span>
+    </router-link>
   </div>
 </template>
 <style scoped>

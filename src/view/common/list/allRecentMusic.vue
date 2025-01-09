@@ -9,7 +9,7 @@
     >
       <img :src="'data:image/jpeg;base64,' + recentlyMusic.img" alt="" />
       <div class="information-playlist">
-        <span class="title1">{{ recentlyMusic.name_music }}</span>
+        <span class="title1">{{ recentlyMusic.music_name }}</span>
       </div>
     </div>
   </div>
@@ -19,7 +19,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      listNewMusics: [],
+      recentlyMusics: [],
     };
   },
   created() {

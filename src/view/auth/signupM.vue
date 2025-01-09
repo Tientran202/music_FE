@@ -106,7 +106,7 @@
       </div>
       <p id="link-login">
         Bạn đã có tài khoản
-        <a href="#">đăng nhập</a>
+        <a href="/login">đăng nhập</a>
       </p>
       <div v-if="errorMessage" id="message">
         <img
@@ -183,18 +183,13 @@ export default {
           "http://localhost:8080/api/auth/register",
           payload
         );
-        alert("Đăng ký thành công!");
+        alert("Xác thực ở mail để hoàn tất việc đăng ký!");
         console.log(response.data); // Dữ liệu trả về từ API
-        this.showMessage("Đăng ký thành công!");
       } catch (error) {
-        if (error.response) {
-          // Lỗi từ phía server (HTTP 4xx hoặc 5xx)
-          this.showMessage(error.response.data.message || "Đăng ký thất bại.");
-        } else {
-          // Lỗi khác (ví dụ: không kết nối được với server)
-          this.showMessage("Lỗi kết nối, vui lòng thử lại.");
+        if (error.response && error.response.status === 400) {
+          // Nếu lỗi là 400 (badRequest)
+          alert(error.response.data); // Lấy thông báo lỗi từ BE
         }
-        console.error(error);
       }
     },
     retogglePasswordVisibility() {

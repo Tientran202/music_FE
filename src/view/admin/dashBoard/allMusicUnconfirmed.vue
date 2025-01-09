@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="container-search">
-      <span class="title">Tất cả bài nhạc đã được ẩn</span>
+      <span class="title">Tất cả bài nhạc cần duyệt</span>
       <span class="sp-search">Tìm kiếm</span>
       <input class="input-search" type="text" placeholder="Nhập từ khoá" />
     </div>
@@ -9,56 +9,72 @@
       <li class="index">#</li>
       <li class="name-music">Tên bài nhạc</li>
       <li class="name-artist">Tên nghệ sĩ</li>
-      <li class="namOfUserReporting">Tên người báo cáo</li>
-      <li class="time">Thời gian bị báo cáo</li>
-      <li class="contentReported">Nội dung</li>
-      <li class="timeHide">Bị ẩn</li>
       <li class="btn-appear"></li>
     </ul>
     <div class="line"></div>
     <ul
       class="sp-content"
-      v-for="(hiddenMuisc, index) in hiddenMuiscs"
-      :key="index"
+      v-for="(musicConfiramtion, index) in musicConfiramtions"
+      :key="musicConfiramtion.id"
     >
       <li class="index">{{ index + 1 }}</li>
-      <li class="name-music" @click="goToIndexMusic(hiddenMuisc.music_id)">
-        {{ hiddenMuisc.music_name }}
+      <li class="name-music">
+        <a @click="goToIndexMusic(musicConfiramtion.id)" href="">{{
+          musicConfiramtion.music_name
+        }}</a>
       </li>
       <li class="name-artist">
-       {{ hiddenMuisc.artist }}
+        <a href="">{{ musicConfiramtion.name }}</a>
       </li>
-      <li class="namOfUserReporting">
-      {{ hiddenMuisc.reported_name }}
+      <li class="btn-appear">
+        <button @click="confir(musicConfiramtion.id)">
+          {{ isConfirmed(musicConfiramtion.id) ? "Đã xác nhận" : "Xác nhận" }}
+        </button>
       </li>
-      <li class="time">{{ formatDate(hiddenMuisc.day) }}</li>
-      <li class="contentReported">{{ hiddenMuisc.report_content }}</li>
-      <li class="timeHide">{{formatDate(hiddenMuisc.hidden_time)}}</li>
-      <li class="btn-appear"><button>Bỏ ẩn</button></li>
     </ul>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+
 export default {
   created() {
     this.fetchHiddenUsers();
   },
   methods: {
-    goToIndexMusic(musicId) {
-      this.$router.push(`/index/${musicId}`);
+    isConfirmed(id) {
+      return this.confirmedMusicIds.includes(id);
     },
+    goToIndexMusic(musicId) {
+      this.$router.push(`/IndexMusicForAdmin/${musicId}`);
+    },
+    // Xác nhận bài hát
+    async confir(musicId) {
+      await axios.patch(
+        "http://localhost:8080/api/music/confirmationMusicById",
+        null,
+        {
+          params: { musicId }, // Dữ liệu RequestParam
+        }
+      );
+      // Thêm id bài hát vào mảng confirmedMusicIds
+      this.confirmedMusicIds.push(musicId);
+    },
+
+    // Lấy dữ liệu bài hát chưa xác nhận
     async fetchHiddenUsers() {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/admin/getAllHiddenMusic"
+          "http://localhost:8080/api/music/getAllMusicUnconfirmed"
         );
-        this.hiddenMuiscs = response.data;
+        this.musicConfiramtions = response.data;
       } catch (error) {
         console.error(error);
       }
     },
+
+    // Định dạng lại ngày giờ
     formatDate(date) {
       const options = {
         year: "numeric",
@@ -72,15 +88,19 @@ export default {
   },
   data() {
     return {
-      hiddenMuiscs: [],
+      musicConfiramtions: [],
+      confirmation: true,
+      // Mảng lưu trữ các id bài hát đã được xác nhận
+      confirmedMusicIds: [],
     };
   },
 };
 </script>
+
 <style scoped>
 .container {
   width: 100%;
-  height: 100%;
+  height: 1000px;
   background: #ffffff;
   color: #000000;
   font-family: Arial, Helvetica, sans-serif;
@@ -106,6 +126,7 @@ export default {
 }
 ul {
   display: flex;
+  align-items: center;
   flex-direction: row;
   padding: 5px 0;
 }
@@ -121,40 +142,24 @@ li {
   list-style: none;
 }
 .index {
-  width: 5%;
+  width: 10%;
   justify-content: center;
   display: flex;
 }
 .name-music {
-  width: 13%;
-  cursor: pointer;
+  width: 50%;
 }
 .name-artist {
-  width: 12%;
+  width: 20%;
 }
-.namOfUserReporting {
-  width: 12%;
-}
-.time {
-  width: 12%;
-}
-.contentReported {
-  display: flex;
-  width: 26%;
-  justify-content: center;
-}
-.timeHide {
-  width: 10%;
-  display: flex;
-  justify-content: center;
-}
+
 .btn-appear {
-  width: 10%;
+  width: 20%;
   display: flex;
   justify-content: center;
 }
 button {
-  font-size: 13px;
+  font-size: 10px;
   border: 1px solid #000000e2;
   border-radius: 4px;
   height: 25px;

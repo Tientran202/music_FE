@@ -13,15 +13,20 @@
         <div>
           <span class="name">{{ user.user_name }}</span>
         </div>
-        <div class="dsp-ntd-container">
-          <span>{{ user.total_playlist }} danh sách phát</span>
-        </div>
         <div class="setting-container">
-          <button class="button-request-artist">Yêu cầu thành nghệ sĩ</button>
+          <button @click="requestBecomeArtist" class="button-request-artist">
+            Yêu cầu thành nghệ sĩ
+          </button>
           <img
             class="img-setting"
             :src="require('/src/assets/setting.png')"
             alt=""
+            @click="FunctionDisplay"
+          />
+          <functionDisplay
+            v-if="isFunctionDisplay"
+            @create-playlist="onCreatePlaylist"
+            @create-story="onCreateStory"
           />
         </div>
       </div>
@@ -31,12 +36,16 @@
       <div class="title">
         <div class="title1">
           <span class="topic">Danh sách phát công khai</span>
-          <img class="img-add2" :src="require('/src/assets/add2.png')" alt="" />
         </div>
-        <span class="more">xem tất cả</span>
+        <span class="more" @click="goToAllPlaylistUser">xem tất cả</span>
       </div>
       <div class="container">
-        <div v-for="(playlist, index) in playlists" :key="index" class="item">
+        <div
+          v-for="(playlist, index) in playlists"
+          :key="index"
+          class="item"
+          @click="goToIndexPlaylist(playlist.playlist_id)"
+        >
           <img
             class="img-item-playlist"
             :src="'data:image/jpeg;base64,' + playlist.playlist_img"
@@ -51,7 +60,6 @@
       <div class="title">
         <div class="title1">
           <span class="topic">Dang theo doi</span>
-          <img class="img-add2" :src="require('/src/assets/add2.png')" alt="" />
         </div>
         <span class="more">xem tất cả</span>
       </div>
@@ -60,6 +68,7 @@
           v-for="(flowing, index) in flowings"
           :key="index"
           class="item-artist"
+          @click="indexArtist(flowing.artist_id)"
         >
           <img
             class="img-item-artist"
@@ -75,7 +84,9 @@
 
 <script>
 import axios from "axios";
+import functionDisplay from "./components/functionDisplayUser.vue";
 export default {
+  components: { functionDisplay },
   created() {
     this.getIndexUser();
     this.getPlaylistByUserId();
@@ -83,15 +94,15 @@ export default {
   },
   data() {
     return {
-      userId: "",
+      userId: localStorage.getItem("userId"),
       user: {},
-      playlists:{},
-      flowings:{}
+      playlists: {},
+      flowings: {},
+      isFunctionDisplay: false,
     };
   },
   methods: {
     async getIndexUser() {
-      this.userId = this.$route.params.id;
       const response = await axios.get(
         "http://localhost:8080/api/user/getIndexUser",
         {
@@ -100,10 +111,24 @@ export default {
       );
       this.user = response.data;
     },
+    goToAllPlaylistUser() {
+      this.$router.push(`/allPlaylistUser`);
+    },
+    indexArtist(artistId) {
+      this.$router.push(`/indexArtist/${artistId}`);
+    },
+    goToIndexPlaylist(playlistId) {
+      this.$router.push(`/playlist/${playlistId}`);
+    },
+    FunctionDisplay() {
+      this.isFunctionDisplay = !this.isFunctionDisplay;
+    },
+    requestBecomeArtist() {
+      this.$router.push({ path: "/becomArtist" });
+    },
     async getPlaylistByUserId() {
-      this.userId = this.$route.params.id;
       const response = await axios.get(
-        "http://localhost:8080/api/playlist/getPlaylistByUserId",
+        "http://localhost:8080/api/playlist/getPlaylistByUserIdLimit",
         {
           params: { userId: this.userId },
         }
@@ -111,7 +136,6 @@ export default {
       this.playlists = response.data;
     },
     async getFlowingByUserId() {
-      this.userId = this.$route.params.id;
       const response = await axios.get(
         "http://localhost:8080/api/user/getFlowingByUserId",
         {
@@ -126,7 +150,7 @@ export default {
 F
 <style scoped>
 .info-container {
-  height: 840px;
+  height: 1000px;
   flex-direction: column;
   display: flex;
   color: white;
@@ -141,6 +165,9 @@ F
   padding: 40px 0 0 0px;
   border-radius: 10px 10px 0 0;
   flex-direction: row;
+}
+.countPlaylist{
+  cursor: pointer;
 }
 .info {
   margin: 10px 0 0 20px;
@@ -160,19 +187,28 @@ F
   font-size: 6rem;
   font-weight: bold;
 }
-
+.more{
+  cursor: pointer;
+}
 .container {
   display: flex;
   width: 100%;
 }
 .item {
-  margin: 10px 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 20px 10px 20px;
+  cursor: pointer;
+}
+.name-playlist {
+  margin: 10px 0 0 0;
 }
 .item-artist {
   margin: 10px 20px 10px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  cursor: pointer;
 }
 
 .setting-container {
@@ -182,6 +218,7 @@ F
   margin: 10px 0 0 0;
 }
 .img-setting {
+  cursor: pointer;
   width: 25px;
   margin: 0 0 0 10px;
 }
@@ -189,6 +226,9 @@ F
   padding: 8px;
   border-radius: 5px;
   border: none;
+  cursor: pointer;
+  background: #d545ba;
+  color: #ffffff;
 }
 .name-artist {
   margin: 10px 0 0 0;
@@ -200,6 +240,7 @@ F
 }
 .img-item-artist {
   width: 160px;
+  height: 160px;
   border-radius: 50%;
 }
 .info2 {
