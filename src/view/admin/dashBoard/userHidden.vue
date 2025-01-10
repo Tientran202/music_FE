@@ -2,8 +2,7 @@
   <div class="container">
     <div class="container-search">
       <span class="title"> Người dùng đã bị ẩn</span>
-      <span class="sp-search">Tìm kiếm</span>
-      <input class="input-search" type="text" placeholder="Nhập từ khoá" />
+    
     </div>
     <ul>
       <li class="index">#</li>

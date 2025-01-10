@@ -3,10 +3,7 @@
     <div id="envelop">
       <img :src="require('/src/assets/z02.png')" alt="Logo" id="logo" />
       <h1>SIGN UP</h1>
-      <div id="gg-container">
-        <img id="gg-img" :src="require('/src/assets/gg.png')" alt="" />
-        <span id="gg-signup">Đăng ký với tài khoản google</span>
-      </div>
+
       <div class="line"></div>
       <div id="signup">
         <label for="email">Nhập email</label>
@@ -72,7 +69,7 @@
           id="name"
           placeholder="Tên người dùng"
         />
-
+        <!-- 
         <div class="dob-container">
           <label for="dob-day">Ngày sinh:</label>
           <div class="dob-picker">
@@ -101,7 +98,7 @@
               </option>
             </select>
           </div>
-        </div>
+        </div> -->
         <button @click="signup">Đăng ký</button>
       </div>
       <p id="link-login">

@@ -52,8 +52,8 @@ import addMusicToPlaylist from '../view/common/indexMusic/components/addMusicToP
 import reportMusic from '../view/common/indexMusic/components/reportMusic.vue'
 import allAlbumArtist from '../view/common/indexArtist/allAlbumArtist.vue'
 import allPlaylistArtist from '../view/common/indexArtist/allPlaylistArtist.vue'
-
 import allPlaylistUser from '../view/user/allPlaylist.vue'
+import indexMusicHidden from '../view/admin/indexMusicHidden.vue'
 
 
 import axios from "axios";
@@ -236,7 +236,7 @@ const routes = [
         name: 'allPlaylistUser',
         component: allPlaylistUser,
     },
-    
+
 
     {
         path: '/login',
@@ -348,6 +348,12 @@ const routes = [
         path: '/reportMusic',
         name: 'reportMusic',
         component: reportMusic,
+    },
+
+    {
+        path: '/indexMusicHidden/:id',
+        name: 'indexMusicHidden',
+        component: indexMusicHidden,
     },
 
 

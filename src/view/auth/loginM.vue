@@ -3,10 +3,7 @@
     <div id="envelop">
       <img :src="require('/src/assets/z02.png')" alt="Logo" id="logo" />
       <h1>LOGIN</h1>
-      <div id="gg-container">
-        <img id="gg-img" :src="require('/src/assets/gg.png')" alt="" />
-        <span id="gg-login">Đăng nhập với tài khoản google</span>
-      </div>
+
       <div class="line"></div>
       <div id="login">
         <label for="email">Email hoặc tên đăng nhập</label>
@@ -89,6 +86,7 @@ export default {
                 );
                 const role = response.data.role;
                 if (role == "admin") {
+                  localStorage.setItem("role", "admin");
                   this.$router.push("/dashboard/statisticalManage");
                 } else {
                   this.$router.push("/");

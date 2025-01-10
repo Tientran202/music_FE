@@ -2,8 +2,7 @@
   <div class="container">
     <div class="container-search">
       <span class="title">Tất cả bài nhạc bị báo cáo</span>
-      <span class="sp-search">Tìm kiếm</span>
-      <input class="input-search" type="text" placeholder="Nhập từ khoá" />
+     
     </div>
     <ul>
       <li class="index">#</li>
@@ -21,7 +20,7 @@
       :key="index"
     >
       <li class="index">{{ index + 1 }}</li>
-      <li class="nameMusic" @click="goToIndexMusic(reportedMuisc.music_id)">
+      <li class="nameMusic" @click="goToIndexMusic(reportedMuisc.music_id,reportedMuisc.report_id)">
         {{ reportedMuisc.music_name }}
       </li>
       <li class="nameArtist">
@@ -40,7 +39,6 @@
     </ul>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 export default {
@@ -85,8 +83,9 @@ export default {
         alert("Có lỗi xảy ra khi tải bài hát lên.");
       }
     },
-    goToIndexMusic(musicId) {
-      this.$router.push(`/index/${musicId}`);
+    goToIndexMusic(musicId,reportId) {
+      localStorage.setItem("reportId",reportId);
+      this.$router.push(`/IndexMusicForAdmin/${musicId}`);
     },
     async hiddenMusic(reportId) {
       try {

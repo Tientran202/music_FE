@@ -2,8 +2,7 @@
   <div class="container">
     <div class="container-search">
       <span class="title">Tất cả bài nhạc đã được ẩn</span>
-      <span class="sp-search">Tìm kiếm</span>
-      <input class="input-search" type="text" placeholder="Nhập từ khoá" />
+    
     </div>
     <ul>
       <li class="index">#</li>
@@ -26,15 +25,17 @@
         {{ hiddenMuisc.music_name }}
       </li>
       <li class="name-artist">
-       {{ hiddenMuisc.artist }}
+        {{ hiddenMuisc.artist }}
       </li>
       <li class="namOfUserReporting">
-      {{ hiddenMuisc.reported_name }}
+        {{ hiddenMuisc.reported_name }}
       </li>
       <li class="time">{{ formatDate(hiddenMuisc.day) }}</li>
       <li class="contentReported">{{ hiddenMuisc.report_content }}</li>
-      <li class="timeHide">{{formatDate(hiddenMuisc.hidden_time)}}</li>
-      <li class="btn-appear"><button>Bỏ ẩn</button></li>
+      <li class="timeHide">{{ formatDate(hiddenMuisc.hidden_time) }}</li>
+      <li class="btn-appear" @click="cancelHidden(hiddenMuisc.music_id)">
+        <button>Bỏ ẩn</button>
+      </li>
     </ul>
   </div>
 </template>
@@ -47,7 +48,7 @@ export default {
   },
   methods: {
     goToIndexMusic(musicId) {
-      this.$router.push(`/index/${musicId}`);
+      this.$router.push(`/indexMusicHidden/${musicId}`);
     },
     async fetchHiddenUsers() {
       try {
@@ -68,6 +69,27 @@ export default {
         minute: "2-digit",
       };
       return new Date(date).toLocaleString("vi-VN", options);
+    },
+    async cancelHidden(musicId) {
+      try {
+        const formData = new FormData();
+        formData.append("musicId", musicId);
+        const response = await fetch(
+          "http://localhost:8080/api/admin/cancelHiddenMusic",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        if (response.ok) {
+          alert("Bài nhạc đã không còn bị ẩn");
+          this.fetchHiddenUsers();
+        } else {
+          alert("Huỷ báo cáo không thành công");
+        }
+      } catch (error) {
+        console.error("Error uploading music:", error);
+      }
     },
   },
   data() {

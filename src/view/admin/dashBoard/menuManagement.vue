@@ -9,7 +9,7 @@
       <span> Thống kê</span>
     </router-link>
 
-    <router-link
+    <!-- <router-link
       class="router"
       to="/dashboard/userReported"
       :class="{ active: $route.name === 'userReported' }"
@@ -25,7 +25,7 @@
     >
       <img :src="require('/src/assets/hide-user.png')" alt="" />
       <span>Người dùng bị ẩn</span>
-    </router-link>
+    </router-link> -->
 
     <router-link
       class="router"

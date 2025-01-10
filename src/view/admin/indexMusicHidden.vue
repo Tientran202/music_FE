@@ -16,8 +16,7 @@
             >Tên nghệ sĩ: {{ musics.artist_name }}
           </span>
           <span class="stage-name"> | Nghệ danh: {{ musics.stage_name }} </span>
-          <button @click="hiddenMusic">Xác nhận ẩn</button>
-          <button @click="hiddenReport">Huỷ bỏ báo cáo</button>
+          <button @click="cancelHidden">Huỷ ẩn</button>
         </div>
       </div>
     </div>
@@ -135,21 +134,21 @@ export default {
         console.error("Error uploading music:", error);
       }
     },
-    async hiddenReport() {
+    async cancelHidden() {
       try {
-        const reportId = localStorage.getItem("reportId");
+        const musicId = this.$route.params.id;
         const formData = new FormData();
-        formData.append("reportId", reportId);
+        formData.append("musicId", musicId);
         const response = await fetch(
-          "http://localhost:8080/api/admin/hiddenReportMusic",
+          "http://localhost:8080/api/admin/cancelHiddenMusic",
           {
             method: "POST",
             body: formData,
           }
         );
         if (response.ok) {
-          alert("Đã huỷ báo cáo");
-          this.$router.push(`/dashboard/musicReported`);
+          alert("Bài nhạc đã không còn bị ẩn");
+          this.$router.push(`/dashboard/musicHide`);
         } else {
           alert("Huỷ báo cáo không thành công");
         }
