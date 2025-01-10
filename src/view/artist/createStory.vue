@@ -26,7 +26,7 @@
           <img
             class="imgMusic"
             v-if="imgCover"
-            :src="imgCover"
+            :src="img"
             alt="Cropped Image"
           />
         </div>
@@ -36,10 +36,10 @@
       <div class="input-infomation">
         <span>Tiêu đề tin</span>
         <input
-          v-model="musicName"
+          v-model="titleStory"
           class="input-music"
           type="text"
-          placeholder="Nhập tên bài hát"
+          placeholder="Nhập tiêu đề"
         />
       </div>
 
@@ -76,7 +76,6 @@
           </div>
         </div>
       </div>
-
       <!-- Nút tạo tin -->
       <button @click="saveMusic" class="btn-createStory">Tạo tin</button>
     </div>
@@ -85,10 +84,6 @@
 <script>
 import AudioCutter from "/src/view/artist/components/AudioCutter.vue"; // Component xử lý cắt nhạc
 import imgCropStory from "/src/view/artist/components/ImageCropStory.vue";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-
-// FFmpeg for handling music cutting
-
 export default {
   components: {
     imgCropStory,
@@ -96,10 +91,11 @@ export default {
   },
   data() {
     return {
+      img: "",
       cutSegment: null, // Lưu đoạn nhạc được cắt
       showCropImgStory: false,
       selectedFile: null, // File nhạc được chọn
-      musicName: "", // Tên bài nhạc
+      titleStory: "", // Tên bài nhạc
       imgCover: "", // Ảnh bìa
       mySongs: [], // Danh sách nhạc từ backend
       selectedMusicId: null, // ID bài nhạc được chọn
@@ -108,25 +104,10 @@ export default {
     };
   },
   created() {
-    this.loadFFmpeg(); // Load FFmpeg khi component được tạo
+    // this.loadFFmpeg(); // Load FFmpeg khi component được tạo
     this.fetchSongs(); // Tải danh sách bài nhạc khi tải trang
   },
   methods: {
-    // Tải FFmpeg vào bộ nhớ
-    async loadFFmpeg() {
-      try {
-        // Kiểm tra nếu FFmpeg chưa được khởi tạo
-        if (!this.ffmpeg) {
-          this.ffmpeg = FFmpeg.createFFmpeg({ log: true }); // Khởi tạo FFmpeg nếu chưa có
-        }
-        await this.ffmpeg.load(); // Tải FFmpeg vào bộ nhớ
-        console.log("FFmpeg loaded successfully.");
-      } catch (error) {
-        console.error("Error loading FFmpeg:", error);
-      }
-    },
-
-    // Fetch danh sách bài hát từ backend
     async fetchSongs() {
       try {
         const artistId = localStorage.getItem("userId"); // Lấy User ID hiện tại
@@ -150,6 +131,7 @@ export default {
       );
       if (selectedSong) {
         try {
+          const userId = localStorage.getItem("userId");
           const response = await fetch(
             `http://localhost:8080/api/music/downloadAudioMusicByMusicId/${selectedSong.id}`
           );
@@ -159,7 +141,14 @@ export default {
 
             // Cập nhật bài nhạc cho Audio Cutter component
             this.$nextTick(() => {
-              this.$refs.audioCutter && this.$refs.audioCutter.updateFile(blob);
+              this.$refs.audioCutter &&
+                this.$refs.audioCutter.updateFile(
+                  blob,
+                  selectedSong.id,
+                  this.titleStory,
+                  this.imgCover,
+                  userId
+                );
             });
           } else {
             alert("Lỗi tải bài nhạc.");
@@ -170,117 +159,38 @@ export default {
       }
     },
 
-    // Lưu đoạn nhạc đã cắt
-    async handleCutMusicSave(segment) {
-      const { file, start, end } = segment;
-
-      const cutAudioFile = await this.cutAudio(file, start, end);
-
-      if (cutAudioFile) {
-        alert("Cắt nhạc thành công");
-        console.log("File cắt:", cutAudioFile);
-        // Thực hiện xử lý thêm như upload file đã cắt lên backend
-      } else {
-        alert("Cắt nhạc không thành công");
-      }
-    },
-
-    async cutAudio(file, start, end) {
-      try {
-        // Kiểm tra FFmpeg có được tải không
-        if (!this.ffmpeg || !this.ffmpeg.isLoaded()) {
-          console.error("FFmpeg is not loaded.");
-          return null;
-        }
-
-        console.log("Tải file audio...");
-        const fileData = await fetch(URL.createObjectURL(file))
-          .then((response) => response.arrayBuffer())
-          .catch((error) => {
-            console.error("Lỗi khi tải file:", error);
-            return null;
-          });
-
-        if (!fileData) {
-          console.error("Không thể tải file.");
-          return null;
-        }
-
-        // Viết file đầu vào vào bộ nhớ ảo của FFmpeg
-        this.ffmpeg.FS("writeFile", "input.mp3", new Uint8Array(fileData));
-        console.log("File đã được tải vào FFmpeg.");
-
-        // Chạy lệnh FFmpeg để cắt audio
-        console.log("Thực hiện cắt audio...");
-        await this.ffmpeg.run(
-          "-i",
-          "input.mp3", // Đường dẫn file đầu vào
-          "-ss",
-          start.toString(), // Thời gian bắt đầu
-          "-t",
-          (end - start).toString(), // Độ dài đoạn cắt
-          "output.mp3" // Đường dẫn file đầu ra
-        );
-
-        // Đọc file đầu ra từ FFmpeg
-        const outputData = this.ffmpeg.FS("readFile", "output.mp3");
-
-        console.log("Đã cắt xong audio.");
-
-        // Tạo Blob từ dữ liệu đầu ra
-        const cutBlob = new Blob([outputData.buffer], { type: "audio/mp3" });
-
-        return cutBlob; // Trả về file đã cắt
-      } catch (error) {
-        console.error("Lỗi khi cắt audio:", error);
-        return null;
-      }
-    },
-
-    // Lưu thông tin bài nhạc sau khi cắt
-    async saveMusic() {
-      // if (!this.cutSegment || !this.imgCover || !this.musicName) {
-      //   alert("Vui lòng chọn đầy đủ thông tin (bài hát và ảnh bìa).");
-      //   return;
-      // }
-      const artistId = localStorage.getItem("userId");
-      const formData = new FormData();
-      formData.append("file", this.cutSegment); // Thêm file bài hát đã cắt
-      formData.append("music_name", this.musicName); // Thêm tên bài hát
-      formData.append("img", this.imgCover); // Nếu ảnh từ crop
-      formData.append("artist_id", artistId);
-      alert("luwu");
-      alert(this.cutSegment);
-      alert(this.imgCover);
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/music/upload-music",
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-        if (response.ok) {
-          alert("Music uploaded successfully!");
-          this.$router.push({ path: "/informationArtist" });
-        } else {
-          alert("Upload failed!");
-        }
-      } catch (error) {
-        console.error("Error uploading music:", error);
-        alert("Có lỗi xảy ra khi tải bài hát lên.");
-      }
-    },
-
-    // Mở màn hình crop ảnh
     showCropStory() {
       this.showCropImgStory = true;
     },
 
     // Đóng màn hình crop ảnh khi xong
-    handleCropComplete(croppedImage) {
-      this.imgCover = croppedImage;
+    // handleCropComplete(croppedImage) {
+    //   this.imgCover = croppedImage;
+    //   this.showCropImgStory = false;
+    // },
+
+    handleCropComplete(croppedImg) {
+      this.img = croppedImg;
+      // Nếu ảnh được trả về là base64 (string), ta cần tạo một tệp từ base64
+      const byteString = atob(croppedImg.split(",")[1]); // Loại bỏ phần prefix của base64 (data:image/png;base64,)
+      const arrayBuffer = new ArrayBuffer(byteString.length);
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      for (let i = 0; i < byteString.length; i++) {
+        uint8Array[i] = byteString.charCodeAt(i);
+      }
+
+      const blob = new Blob([uint8Array], { type: "image/png" }); // Chọn kiểu ảnh tùy thuộc vào định dạng thực tế của ảnh
+      const file = new File([blob], "cropped-image.png", { type: "image/png" });
+      this.imgCover = file; // Lưu tệp vào imgCover thay vì base64
       this.showCropImgStory = false;
+    },
+
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.selectedFile = file;
+      }
     },
 
     // Đóng màn hình crop nếu không lưu ảnh

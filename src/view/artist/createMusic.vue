@@ -116,6 +116,7 @@ export default {
       }
       const artistId = localStorage.getItem("userId");
       const formData = new FormData();
+      alert(this.imgCover);
       formData.append("genreId", this.genreId); // Thêm file bài hát
       formData.append("file", this.selectedFile); // Thêm file bài hát
       formData.append("music_name", this.musicName); // Thêm tên bài hát
