@@ -54,6 +54,11 @@ import allAlbumArtist from '../view/common/indexArtist/allAlbumArtist.vue'
 import allPlaylistArtist from '../view/common/indexArtist/allPlaylistArtist.vue'
 import allPlaylistUser from '../view/user/allPlaylist.vue'
 import indexMusicHidden from '../view/admin/indexMusicHidden.vue'
+import indexStory from '../view/common/indexStory.vue'
+import logoutH from '../components/logoutH.vue'
+
+
+
 
 
 import axios from "axios";
@@ -258,6 +263,12 @@ const routes = [
         name: 'allMusicArtist',
         component: allMusicArtist,
     },
+    {
+        path: '/logoutH',
+        name: 'logoutH',
+        component: logoutH,
+    },
+    
 
     {
         path: '/functionDisplayUser',
@@ -298,6 +309,12 @@ const routes = [
         component: allNewMusic,
     },
 
+
+     {
+        path: '/indexStory/:id',
+        name: 'indexStory',
+        component: indexStory,
+    },
 
     {
         path: '/allAlbum',

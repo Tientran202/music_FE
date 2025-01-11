@@ -6,5 +6,5 @@ import VueGoogleCharts from "vue-google-charts";
 createApp(App)
     .use(VueGoogleCharts)
     .use(store)
-    .use(router) // Đăng ký router
+    .use(router) 
     .mount('#app');

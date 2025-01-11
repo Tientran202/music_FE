@@ -42,8 +42,8 @@ export default {
 .header-container {
   position: fixed;
 
-  width: 100%; /* Chiều rộng bằng với toàn bộ màn hình */
-  z-index: 1000; /* Đảm bảo menu nằm trên các phần tử khác */
+  width: 100%;
+  z-index: 1000; 
 
   display: flex;
   background: #0f0f0f;

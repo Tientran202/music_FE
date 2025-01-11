@@ -1,8 +1,6 @@
 <template>
   <div class="audio-cutter-container">
-    <!-- Thanh kéo với 2 nút -->
     <div class="timeline" ref="timeline">
-      <!-- Nút bắt đầu -->
       <div
         class="slider-button start"
         ref="startButton"
@@ -10,7 +8,6 @@
         @mousedown="startDrag('start')"
       ></div>
 
-      <!-- Nút kết thúc -->
       <div
         class="slider-button end"
         ref="endButton"
@@ -18,7 +15,6 @@
         @mousedown="startDrag('end')"
       ></div>
 
-      <!-- Thanh kéo -->
       <div class="slider-track"></div>
     </div>
 
@@ -40,15 +36,15 @@ export default {
   },
   data() {
     return {
-      audioFile: null, // Đối tượng file nhạc
-      audioContext: null, // Đối tượng audio context để phát nhạc
-      audioBuffer: null, // Bộ đệm âm thanh
-      audioSource: null, // Đối tượng audio source
-      startTime: 0, // Thời gian bắt đầu
-      endTime: 0, // Thời gian kết thúc
-      startLeft: 0, // Vị trí bắt đầu trên thanh kéo (tính theo %)
-      endLeft: 100, // Vị trí kết thúc trên thanh kéo (tính theo %)
-      dragging: null, // Theo dõi đang kéo nút nào
+      audioFile: null, 
+      audioContext: null,
+      audioBuffer: null, 
+      audioSource: null,
+      startTime: 0,
+      endTime: 0, 
+      startLeft: 0, 
+      endLeft: 100, 
+      dragging: null, 
       musicId: "",
       titleStory: "",
       imgCover: "",
@@ -56,13 +52,13 @@ export default {
     };
   },
   watch: {
-    file: "updateFile", // Khi có file mới từ parent, cập nhật file
+    file: "updateFile", 
   },
   methods: {
-    // Cập nhật file nhạc được chọn
+    
     updateFile(newFile, musicId, titleStory, imgCover, userId) {
       this.audioFile = URL.createObjectURL(newFile);
-      this.musicId = musicId; // Lưu musicId vào một biến để sử dụng sau này
+      this.musicId = musicId; 
       this.titleStory = titleStory;
       this.imgCover = imgCover;
       this.userId = userId;
@@ -100,7 +96,6 @@ export default {
       document.addEventListener("mouseup", onMouseUp);
     },
 
-    // Xử lý khi di chuyển chuột
     handleMouseMove(e, timeline) {
       const rect = timeline.getBoundingClientRect();
       const percent = Math.min(
@@ -119,17 +114,14 @@ export default {
       }
     },
 
-    // Dừng kéo và loại bỏ các sự kiện
     stopDrag(onMouseMove, onMouseUp) {
       this.dragging = null;
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseup", onMouseUp);
     },
 
-    // Phát lại bài nhạc từ startTime và dừng ở endTime
     playFromStart() {
       if (this.audioContext && this.audioBuffer) {
-        // Dừng nếu đang phát bài nhạc trước đó
         if (this.audioSource) {
           this.audioSource.stop();
         }
@@ -137,10 +129,8 @@ export default {
         this.audioSource = this.audioContext.createBufferSource();
         this.audioSource.buffer = this.audioBuffer;
 
-        // Đặt thời gian bắt đầu và kết thúc
         this.audioSource.start(0, this.startTime);
 
-        // Dừng nhạc khi đến thời gian kết thúc
         const duration = this.endTime - this.startTime;
         setTimeout(() => {
           if (this.audioSource) {
@@ -148,12 +138,10 @@ export default {
           }
         }, duration * 1000);
 
-        // Tăng cường kết nối audio và đích phát (output)
         this.audioSource.connect(this.audioContext.destination);
       }
     },
 
-    // Lưu đoạn nhạc đã cắt
     async saveCutAudio() {
       const formData = new FormData();
       formData.append("startTime", parseInt(this.startTime, 10));

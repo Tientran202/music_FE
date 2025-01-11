@@ -19,6 +19,9 @@ export default {
     };
   },
   methods: {
+    closeReport() {
+      this.$emit("close");
+    },
     async report() {
       const accessToken = localStorage.getItem("accessToken");
       const response = await axios.get(
@@ -44,6 +47,7 @@ export default {
           );
           if (response.status == 200) {
             this.isFollowing = !this.isFollowing;
+            this.closeReport();
             alert("Đã báo cáo");
           }
         }

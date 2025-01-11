@@ -74,12 +74,12 @@
   justify-content: center;
 }
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; /* Loại bỏ kiểu mặc định */
-  width: 10px; /* Đặt kích thước của nút kéo */
-  height: 10px; /* Đặt kích thước của nút kéo */
-  background: #ffffff; /* Màu nền của nút kéo */
-  border-radius: 50%; /* Bo góc tròn cho nút kéo */
-  cursor: pointer; /* Thay đổi con trỏ khi di chuột qua */
+  -webkit-appearance: none;
+  width: 10px; 
+  height: 10px;
+  background: #ffffff; 
+  border-radius: 50%;
+  cursor: pointer;
 }
 .range-music {
   margin: 20px 0 0 0;

@@ -124,7 +124,6 @@ export default {
   },
   computed: {
     visiblePlaylists() {
-      // Nếu showAll là true, hiển thị tất cả playlist
       return this.showAll
         ? this.playlists
         : this.playlists.slice(0, this.limit);
@@ -153,8 +152,8 @@ export default {
       this.$router.push(`/indexAlbum/${albumId}`);
     },
     async getFollowStatus() {
-      this.artistId = this.$route.params.id; // Lấy artistId từ URL route
-      const userId = localStorage.getItem("userId"); // Lấy userId từ localStorage
+      this.artistId = this.$route.params.id;
+      const userId = localStorage.getItem("userId"); 
       try {
         const response = await axios.get(
           "http://localhost:8080/api/follow/getFollow",
@@ -167,9 +166,8 @@ export default {
         );
 
         if (response.status === 200) {
-          const isFollowing = response.data; // API trả về boolean
+          const isFollowing = response.data; 
           console.log("Follow status:", isFollowing);
-          // Tùy chỉnh trạng thái UI dựa vào giá trị isFollowing
           this.isFollowing = isFollowing;
         }
       } catch (error) {

@@ -23,7 +23,6 @@
       <li class="time">{{ requestToBecomeArtist.time_request_artist }}</li>
       <li class="btn">
         <button @click="acceptRequestArtist(requestToBecomeArtist.id)">Chấp nhận</button>
-        <button>Huỷ</button>
       </li>
     </ul>
   </div>

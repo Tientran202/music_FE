@@ -65,14 +65,14 @@ import imgCropAlbum from "./components/imgCropAlbum.vue";
 export default {
   components: { imgCropAlbum },
   created() {
-    this.fetchSongs(); // Tải danh sách bài nhạc khi tải trang
+    this.fetchSongs(); 
   },
   data() {
     return {
-      albumName: "", // Tên playlist
-      mySongs: [], // Danh sách nhạc từ backend
-      selectedMusicId: null, // ID bài nhạc được chọn
-      selectedSongs: [], // Danh sách bài nhạc đã chọnal
+      albumName: "", 
+      mySongs: [], 
+      selectedMusicId: null, 
+      selectedSongs: [], 
       albumId: "",
       showCropImgStory: false,
       img: "",
@@ -102,12 +102,10 @@ export default {
       this.showCropImgStory = true;
     },
     addMusicToPlaylist() {
-      // Tìm bài nhạc theo ID được chọn
       const selectedMusic = this.mySongs.find(
         (music) => music.id === this.selectedMusicId
       );
 
-      // Thêm bài nhạc vào danh sách nếu chưa có
       if (
         selectedMusic &&
         !this.selectedSongs.some((s) => s.id === selectedMusic.id)
@@ -117,7 +115,6 @@ export default {
         alert("Bài nhạc này đã được thêm.");
       }
 
-      // Reset lại select
       this.selectedMusicId = null;
     },
 
@@ -126,8 +123,7 @@ export default {
     },
     handleCropComplete(croppedImg) {
       this.img = croppedImg;
-      // Nếu ảnh được trả về là base64 (string), ta cần tạo một tệp từ base64
-      const byteString = atob(croppedImg.split(",")[1]); // Loại bỏ phần prefix của base64 (data:image/png;base64,)
+      const byteString = atob(croppedImg.split(",")[1]); 
       const arrayBuffer = new ArrayBuffer(byteString.length);
       const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -135,12 +131,11 @@ export default {
         uint8Array[i] = byteString.charCodeAt(i);
       }
 
-      const blob = new Blob([uint8Array], { type: "image/png" }); // Chọn kiểu ảnh tùy thuộc vào định dạng thực tế của ảnh
+      const blob = new Blob([uint8Array], { type: "image/png" }); 
       const file = new File([blob], "cropped-image.png", { type: "image/png" });
-      this.imgCover = file; // Lưu tệp vào imgCover thay vì base64
+      this.imgCover = file; 
     },
     removeSong(index) {
-      // Xóa bài nhạc khỏi danh sách
       this.selectedSongs.splice(index, 1);
     },
     async createAlbum() {
@@ -176,27 +171,22 @@ export default {
               }
               this.albumId = await albumIdResponse.json();
 
-              // 2. Gửi yêu cầu PATCH cập nhật albumId cho các bài nhạc
               const songUpdates = this.selectedSongs.map((song) => ({
                 musicId: song.id,
                 albumId: this.albumId,
               }));
               songUpdates.forEach((update, index) => {
                 console.log(`Phần tử ${index + 1}:`, update);
-                alert(
-                  `Phần tử ${index + 1}: Music ID: ${
-                    update.musicId
-                  }, Album ID: ${update.albumId}`
-                );
+             
               });
               const patchResponse = await fetch(
                 "http://localhost:8080/api/music/updateAlbumIdforMusic",
                 {
                   method: "PATCH",
                   headers: {
-                    "Content-Type": "application/json", // Đây là phần quan trọng để thông báo dữ liệu gửi đi dưới dạng JSON
+                    "Content-Type": "application/json", 
                   },
-                  body: JSON.stringify(songUpdates), // Danh sách các bài nhạc cần cập nhật
+                  body: JSON.stringify(songUpdates),
                 }
               );
 
@@ -218,7 +208,6 @@ export default {
       } catch (error) {
         alert(error);
       }
-      // Kiểm tra thông tin nhập liệu
     },
   },
 };
@@ -270,9 +259,9 @@ img {
   padding: 0;
   height: 150px;
   width: 250px;
-  max-height: 150px; /* Chiều cao cố định */
-  overflow-y: auto; /* Hiển thị thanh kéo dọc */
-  border: 1px solid #ccc; /* Viền cho danh sách */
+  max-height: 150px; 
+  overflow-y: auto;
+  border: 1px solid #ccc; 
   margin: 10px 0;
   padding: 5px;
   display: flex;

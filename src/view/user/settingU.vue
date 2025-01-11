@@ -26,59 +26,7 @@
         <span>Tên</span>
         <input v-model="name" type="text" placeholder="Nhập tên mới" />
       </div>
-      <!-- <div class="input1">
-        <span>Link liên kết mạng xã hội</span>
-        <input type="text" placeholder="Nhập link mới" />
-      </div> -->
-      <!-- <div class="input2">
-        <div class="dob-container">
-          <label for="dob-day">Ngày sinh:</label>
-          <div class="dob-picker">
-            <select class="select2" v-model="selectedDay" id="dob-day">
-              <option disabled value="">Ngày</option>
-              <option v-for="day in days" :key="day" :value="day">
-                {{ day }}
-              </option>
-            </select>
-
-            <select
-              class="select1"
-              v-model="selectedMonth"
-              @change="updateDays"
-              id="dob-month"
-            >
-              <option disabled value="">Tháng</option>
-              <option
-                v-for="(month, index) in months"
-                :key="index"
-                :value="index + 1"
-              >
-                {{ month }}
-              </option>
-            </select>
-
-            <select
-              class="select1"
-              v-model="selectedYear"
-              @change="updateDays"
-              id="dob-year"
-            >
-              <option disabled value="">Năm</option>
-              <option v-for="year in years" :key="year" :value="year">
-                {{ year }}
-              </option>
-            </select>
-          </div>
-        </div>
-      </div> -->
-      <!-- <div class="input1">
-        <span>Giới tính</span>
-        <select class="select-gender" name="gender" id="gender">
-          <option value="male">Nam</option>
-          <option value="female">Nữ</option>
-          <option value="other">Khác</option>
-        </select>
-      </div> -->
+      
       <button @click="updateProfile" class="button-edit">Cập nhật</button>
     </div>
 
@@ -114,8 +62,7 @@ export default {
     ImageCropper,
   },
   created() {
-    // this.populateYears();
-    // this.updateDays();
+   
     this.getIndexArtist();
   },
   data() {
@@ -132,21 +79,7 @@ export default {
       newPass: "",
       userId: "",
       reNewPass: "",
-      months: [
-        "Tháng 1",
-        "Tháng 2",
-        "Tháng 3",
-        "Tháng 4",
-        "Tháng 5",
-        "Tháng 6",
-        "Tháng 7",
-        "Tháng 8",
-        "Tháng 9",
-        "Tháng 10",
-        "Tháng 11",
-        "Tháng 12",
-      ],
-      years: [],
+      
     };
   },
   methods: {
@@ -204,7 +137,7 @@ export default {
       }
     },
     handleCloseCropper() {
-      this.showCropperComponent = false; // Ẩn cropper khi sự kiện đóng được phát ra
+      this.showCropperComponent = false; 
     },
     showCropper() {
       this.showCropperComponent = true;

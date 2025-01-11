@@ -23,8 +23,8 @@ export default {
     padding: 30px 0 20px 0;
   position: fixed;
   background: #121212;
-  width: 100%; /* Chiều rộng bằng với toàn bộ màn hình */
-  z-index: 1000; /* Đảm bảo menu nằm trên các phần tử khác */
+  width: 100%; 
+  z-index: 1000; 
 }
 
 </style>

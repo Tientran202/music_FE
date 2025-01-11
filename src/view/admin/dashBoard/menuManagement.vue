@@ -69,7 +69,7 @@
       :class="{ active: $route.name === 'userList' }"
     >
       <img :src="require('/src/assets/user1.png')" alt="" />
-      <span>Danh sách người nghe</span>
+      <span>Danh sách người dùng thường</span>
     </router-link>
     <router-link
       class="router"

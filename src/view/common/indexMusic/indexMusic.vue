@@ -14,7 +14,7 @@
           <span class="name-artist">{{ musics.artist_name }} </span>
           <span class="stage-name"> | {{ musics.stage_name }} </span>
           <button class="btn-option" @click="reportMusicHide">báo cáo</button>
-          <reportMusic v-if="reportMusic"></reportMusic>
+          <reportMusic v-if="reportMusic" @close="reportHide"></reportMusic>
           <button @click="addMusicHide" class="btn-option">
             Thêm vào danh sách phát
           </button>
@@ -68,34 +68,30 @@ export default {
   },
   computed: {
     musicId() {
-      return this.$route.params.id; // Lấy `musicId` từ route
+      return this.$route.params.id; 
     },
   },
   watch: {
     musicId: {
-      immediate: true, // Gọi ngay lần đầu khi component được load
+      immediate: true,
       handler(newId) {
-        this.initMusicPlayer(newId); // Gọi hàm khi musicId thay đổi
+        this.initMusicPlayer(newId); 
       },
     },
   },
-  // mounted() {
-  //   this.initMusicPlayer();
-  // },
+  
   methods: {
     ...mapActions(["playSong", "toggleIsPlaying", "togglePlayPause"]),
 
     async initMusicPlayer() {
-      await this.getIndexMusic(); // Lấy dữ liệu bài hát
+      await this.getIndexMusic(); 
       if (this.musics && this.musics.musicAudio) {
-        // Kiểm tra nếu dữ liệu hợp lệ
-        this.playThisSong(); // Gọi phát nhạc
+        this.playThisSong(); 
         await this.getSuggestedMusicResponse();
       }
     },
     async togglePlay() {
       const musicId = this.$route.params.id;
-      // Lấy thông tin bài hát từ API
       const response = await axios.get(
         `http://localhost:8080/api/music/getIndexMusicArtist/${musicId}`
       );
@@ -116,6 +112,9 @@ export default {
     reportMusicHide() {
       this.reportMusic = !this.reportMusic;
     },
+    reportHide() {
+      this.reportMusic = false;
+    },
 
     goToIndexMusic(musicId) {
       this.$router.push(`/index/${musicId}`);
@@ -131,7 +130,6 @@ export default {
     },
     async getIndexMusic() {
       const musicId = this.$route.params.id;
-      // Kiểm tra genreId, nếu không hợp lệ thì bỏ qua
       const response = await axios.get(
         `http://localhost:8080/api/music/getIndexMusicArtist/${musicId}`
       );

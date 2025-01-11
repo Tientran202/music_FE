@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <!-- Hình nền -->
     <img class="img-z02" :src="require('@/assets/z02.png')" alt="" />
 
     <div class="container-story">
@@ -43,11 +42,9 @@
         />
       </div>
 
-      <!-- Chọn và cắt nhạc -->
       <div class="input-infomation">
         <span>Chọn nhạc</span>
         <div class="music-uploader">
-          <!-- Danh sách bài nhạc -->
           <div class="input-infomation1">
             <span>Chọn bài nhạc</span>
             <select
@@ -65,7 +62,6 @@
             </select>
           </div>
 
-          <!-- Component Audio Cutter -->
           <div class="music-cutter" v-if="selectedMusicFile">
             <span>Cắt nhạc:</span>
             <audio-cutter
@@ -76,7 +72,6 @@
           </div>
         </div>
       </div>
-      <!-- Nút tạo tin -->
       <button @click="saveMusic" class="btn-createStory">Tạo tin</button>
     </div>
   </div>
@@ -92,25 +87,24 @@ export default {
   data() {
     return {
       img: "",
-      cutSegment: null, // Lưu đoạn nhạc được cắt
+      cutSegment: null, 
       showCropImgStory: false,
-      selectedFile: null, // File nhạc được chọn
-      titleStory: "", // Tên bài nhạc
-      imgCover: "", // Ảnh bìa
-      mySongs: [], // Danh sách nhạc từ backend
-      selectedMusicId: null, // ID bài nhạc được chọn
-      selectedMusicFile: null, // File bài nhạc sau khi tải xuống từ backend
-      ffmpeg: null, // FFmpeg instance
+      selectedFile: null, 
+      titleStory: "",
+      imgCover: "",
+      mySongs: [], 
+      selectedMusicId: null,
+      selectedMusicFile: null,
+      ffmpeg: null, 
     };
   },
   created() {
-    // this.loadFFmpeg(); // Load FFmpeg khi component được tạo
-    this.fetchSongs(); // Tải danh sách bài nhạc khi tải trang
+    this.fetchSongs();
   },
   methods: {
     async fetchSongs() {
       try {
-        const artistId = localStorage.getItem("userId"); // Lấy User ID hiện tại
+        const artistId = localStorage.getItem("userId"); 
         const response = await fetch(
           `http://localhost:8080/api/music/artist-songs/${artistId}`
         );
@@ -124,7 +118,6 @@ export default {
       }
     },
 
-    // Khi chọn bài nhạc
     async onMusicSelect() {
       const selectedSong = this.mySongs.find(
         (song) => song.id === this.selectedMusicId
@@ -136,10 +129,9 @@ export default {
             `http://localhost:8080/api/music/downloadAudioMusicByMusicId/${selectedSong.id}`
           );
           if (response.ok) {
-            const blob = await response.blob(); // Nhận file bài nhạc từ backend
-            this.selectedMusicFile = blob; // Gắn file vào trình cắt nhạc
+            const blob = await response.blob(); 
+            this.selectedMusicFile = blob; 
 
-            // Cập nhật bài nhạc cho Audio Cutter component
             this.$nextTick(() => {
               this.$refs.audioCutter &&
                 this.$refs.audioCutter.updateFile(
@@ -163,16 +155,11 @@ export default {
       this.showCropImgStory = true;
     },
 
-    // Đóng màn hình crop ảnh khi xong
-    // handleCropComplete(croppedImage) {
-    //   this.imgCover = croppedImage;
-    //   this.showCropImgStory = false;
-    // },
+ 
 
     handleCropComplete(croppedImg) {
       this.img = croppedImg;
-      // Nếu ảnh được trả về là base64 (string), ta cần tạo một tệp từ base64
-      const byteString = atob(croppedImg.split(",")[1]); // Loại bỏ phần prefix của base64 (data:image/png;base64,)
+      const byteString = atob(croppedImg.split(",")[1]); 
       const arrayBuffer = new ArrayBuffer(byteString.length);
       const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -180,9 +167,9 @@ export default {
         uint8Array[i] = byteString.charCodeAt(i);
       }
 
-      const blob = new Blob([uint8Array], { type: "image/png" }); // Chọn kiểu ảnh tùy thuộc vào định dạng thực tế của ảnh
+      const blob = new Blob([uint8Array], { type: "image/png" }); 
       const file = new File([blob], "cropped-image.png", { type: "image/png" });
-      this.imgCover = file; // Lưu tệp vào imgCover thay vì base64
+      this.imgCover = file; 
       this.showCropImgStory = false;
     },
 
@@ -193,7 +180,6 @@ export default {
       }
     },
 
-    // Đóng màn hình crop nếu không lưu ảnh
     handleCloseCropperStory() {
       this.showCropImgStory = false;
     },

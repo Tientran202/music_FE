@@ -28,52 +28,45 @@ import axios from "axios";
 export default {
   data() {
     return {
-      musicList: [], // Danh sách bài hát
-      loading: false, // Trạng thái loading khi gọi API
-      error: null, // Lưu trữ lỗi (nếu có)
-      genreId: null, // ID của genre
+      musicList: [], 
+      loading: false, 
+      error: null, 
+      genreId: null, 
     };
   },
   watch: {
-    // Theo dõi thay đổi trong URL params
     "$route.params.id": {
       handler(newId) {
-        this.genreId = newId; // Cập nhật giá trị genreId
-        this.getMusicByGenre(); // Gọi lại API khi ID thay đổi
+        this.genreId = newId; 
+        this.getMusicByGenre(); 
       },
-      immediate: true, // Thực hiện handler ngay khi component được tạo
+      immediate: true, 
     },
   },
   methods: {
     navigateToMusic(musicId) {
-      // Dẫn tới trang hiển thị chi tiết music với index
       this.$router.push(`/index/${musicId}`);
     },
     async getMusicByGenre() {
-      // Kiểm tra genreId, nếu không hợp lệ thì bỏ qua
       if (!this.genreId) {
-        this.musicList = []; // Reset danh sách nhạc
+        this.musicList = []; 
         this.error = "Genre ID is invalid.";
         return;
       }
 
       this.loading = true;
-      this.error = null; // Reset lỗi trước khi gọi API
+      this.error = null; 
 
       try {
-        // Gọi API để lấy danh sách bài hát theo thể loại
         const response = await axios.get(
           `http://localhost:8080/api/genre/getGenreAndMusic/${this.genreId}`
         );
 
-        // Lưu kết quả trả về
         this.musicList = response.data;
       } catch (err) {
-        // Xử lý lỗi API
         this.error = "Failed to fetch music data. Please try again later.";
         console.error(err);
       } finally {
-        // Dừng trạng thái loading
         this.loading = false;
       }
     },
@@ -133,9 +126,9 @@ img {
   margin: 0;
   font-size: 13px;
   width: 150px;
-  overflow: hidden; /* Ẩn phần văn bản tràn ra ngoài */
-  text-overflow: ellipsis; /* Thêm dấu ba chấm khi văn bản bị cắt */
-  display: block; /* Đảm bảo phần tử là block để các thuộc tính trên hoạt động */
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  display: block; 
 }
 
 .title2 {
@@ -144,7 +137,7 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
-  text-align: left; /* Căn sang phải */
+  text-align: left; 
   margin: 5px 0 0 0;
 }
 .title2:hover {

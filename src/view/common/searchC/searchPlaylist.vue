@@ -26,10 +26,9 @@ export default {
     this.fetchSearchResults();
   },
   watch: {
-    // Khi keyword thay đổi, gọi lại fetchSearchResults
     "$route.query.keyword"(newKeyword) {
-      this.keyword = newKeyword; // Cập nhật keyword
-      this.fetchSearchResults(); // Gọi lại API khi keyword thay đổi
+      this.keyword = newKeyword; 
+      this.fetchSearchResults(); 
     },
   },
   methods: {
@@ -85,9 +84,9 @@ img {
 .title1 {
   font-size: 14px;
   width: 150px;
-  overflow: hidden; /* Ẩn phần văn bản tràn ra ngoài */
-  text-overflow: ellipsis; /* Thêm dấu ba chấm khi văn bản bị cắt */
-  display: block; /* Đảm bảo phần tử là block để các thuộc tính trên hoạt động */
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  display: block; 
   text-align: left;
 }
 .title2 {

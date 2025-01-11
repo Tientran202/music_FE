@@ -170,12 +170,10 @@ img {
   height: auto;
 }
 
-/* Bo tròn các phần tử cropper (khung cắt) */
 .cropper-face, .cropper-move {
   border-radius: 50% !important;
 }
 
-/* Đảm bảo cropper-move có viền, bạn có thể điều chỉnh màu và kiểu viền nếu cần */
 .cropper-move {
   border: 3px dashed #f44336;
 }

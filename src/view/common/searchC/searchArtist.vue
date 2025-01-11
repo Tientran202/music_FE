@@ -53,10 +53,9 @@ export default {
     this.fetchSearchResults();
   },
   watch: {
-    // Khi keyword thay đổi, gọi lại fetchSearchResults
     "$route.query.keyword"(newKeyword) {
-      this.keyword = newKeyword; // Cập nhật keyword
-      this.fetchSearchResults(); // Gọi lại API khi keyword thay đổi
+      this.keyword = newKeyword; 
+      this.fetchSearchResults();
     },
   },
   methods: {

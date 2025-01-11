@@ -59,7 +59,6 @@ export default {
       genres: [],
       genreId: "",
       selectedGenre: "",
-      // Dữ liệu ảnh bìa đã crop
     };
   },
   methods: {
@@ -79,7 +78,6 @@ export default {
       // };
       const formData = new FormData();
 
-      // Thêm dữ liệu vào FormData
       formData.append("playlist_name", this.playlist_name);
       formData.append("user_id", artistId);
       formData.append("image", this.imgCover); // Lưu file ảnh đã crop
@@ -93,7 +91,7 @@ export default {
           "http://localhost:8080/api/playlist/createPlaylist",
           {
             method: "POST",
-            body: formData, // Sử dụng FormData thay vì JSON
+            body: formData, 
           }
         );
 
@@ -104,23 +102,7 @@ export default {
           const errorMessage = await response.text();
           alert(`Upload failed: ${errorMessage}`);
         }
-        // const response = await fetch(
-        //   "http://localhost:8080/api/playlist/createPlaylist",
-        //   {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify(payload),
-        //   }
-        // );
-
-        // if (response.ok) {
-        //   alert("Music uploaded successfully!");
-        //   this.$router.push({ path: "/informationArtist" });
-        // } else {
-        //   alert("Upload failed!");
-        // }
+       
       } catch (error) {
         console.error("Error uploading music:", error);
         alert("Có lỗi xảy ra khi tải bài hát lên.");
@@ -134,8 +116,7 @@ export default {
     },
     handleCropComplete(croppedImg) {
       this.img = croppedImg;
-      // Nếu ảnh được trả về là base64 (string), ta cần tạo một tệp từ base64
-      const byteString = atob(croppedImg.split(",")[1]); // Loại bỏ phần prefix của base64 (data:image/png;base64,)
+      const byteString = atob(croppedImg.split(",")[1]); 
       const arrayBuffer = new ArrayBuffer(byteString.length);
       const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -143,9 +124,9 @@ export default {
         uint8Array[i] = byteString.charCodeAt(i);
       }
 
-      const blob = new Blob([uint8Array], { type: "image/png" }); // Chọn kiểu ảnh tùy thuộc vào định dạng thực tế của ảnh
+      const blob = new Blob([uint8Array], { type: "image/png" }); 
       const file = new File([blob], "cropped-image.png", { type: "image/png" });
-      this.imgCover = file; // Lưu tệp vào imgCover thay vì base64
+      this.imgCover = file;
     },
 
     onFileChange(event) {

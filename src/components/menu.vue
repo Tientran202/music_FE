@@ -12,6 +12,7 @@
             @click="clearSearch"
           />
         </div>
+
         <input
           type="text"
           placeholder="Tìm kiếm..."
@@ -48,6 +49,7 @@
 <script>
 export default {
   name: "App",
+
   data() {
     return {
       admin: "",
@@ -119,6 +121,17 @@ export default {
   height: 70px;
   background: #121212;
   z-index: 9999;
+}
+.logout {
+  position: absolute;
+  margin: -32px 0 0 680px;
+  width: 20px;
+  height: 20px;
+}
+.logoutH{
+    position: absolute;
+
+ 
 }
 .container {
   color: #ffffff;

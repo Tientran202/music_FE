@@ -81,14 +81,13 @@ export default {
   data() {
     return {
       showCropImgStory: false,
-      selectedFile: null, // File nhạc được chọn
-      musicName: "", // Tên bài nhạc
+      selectedFile: null, 
+      musicName: "", 
       img: "",
       imgCover: "",
       genres: [],
       genreId: "",
       selectedGenre: "",
-      // Dữ liệu ảnh bìa đã crop
     };
   },
   methods: {
@@ -116,7 +115,7 @@ export default {
       }
       const artistId = localStorage.getItem("userId");
       const formData = new FormData();
-      alert(this.imgCover);
+      // alert(this.imgCover);
       formData.append("genreId", this.genreId); // Thêm file bài hát
       formData.append("file", this.selectedFile); // Thêm file bài hát
       formData.append("music_name", this.musicName); // Thêm tên bài hát
@@ -151,8 +150,7 @@ export default {
     },
     handleCropComplete(croppedImg) {
       this.img = croppedImg;
-      // Nếu ảnh được trả về là base64 (string), ta cần tạo một tệp từ base64
-      const byteString = atob(croppedImg.split(",")[1]); // Loại bỏ phần prefix của base64 (data:image/png;base64,)
+      const byteString = atob(croppedImg.split(",")[1]); 
       const arrayBuffer = new ArrayBuffer(byteString.length);
       const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -160,9 +158,9 @@ export default {
         uint8Array[i] = byteString.charCodeAt(i);
       }
 
-      const blob = new Blob([uint8Array], { type: "image/png" }); // Chọn kiểu ảnh tùy thuộc vào định dạng thực tế của ảnh
+      const blob = new Blob([uint8Array], { type: "image/png" }); 
       const file = new File([blob], "cropped-image.png", { type: "image/png" });
-      this.imgCover = file; // Lưu tệp vào imgCover thay vì base64
+      this.imgCover = file; 
     },
 
     onFileChange(event) {

@@ -11,7 +11,6 @@
     >
       <img :src="'data:image/jpeg;base64,' + popularArtist.avatar" alt="" />
       <div class="information-playlist">
-        <!-- <span class="title1">{{ popularArtist.name_music }}</span> -->
         <span class="title2">{{ popularArtist.stage_name }}</span>
       </div>
     </div>
@@ -91,9 +90,9 @@ img {
   text-align: left;
   font-size: 14px;
   width: 150px;
-  overflow: hidden; /* Ẩn phần văn bản tràn ra ngoài */
-  text-overflow: ellipsis; /* Thêm dấu ba chấm khi văn bản bị cắt */
-  display: block; /* Đảm bảo phần tử là block để các thuộc tính trên hoạt động */
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  display: block; 
 }
 .title2 {
   font-size: 12px;

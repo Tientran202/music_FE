@@ -69,36 +69,7 @@
           id="name"
           placeholder="Tên người dùng"
         />
-        <!-- 
-        <div class="dob-container">
-          <label for="dob-day">Ngày sinh:</label>
-          <div class="dob-picker">
-            <select v-model="selectedDay" id="dob-day">
-              <option disabled value="">Ngày</option>
-              <option v-for="day in days" :key="day" :value="day">
-                {{ day }}
-              </option>
-            </select>
-
-            <select v-model="selectedMonth" @change="updateDays" id="dob-month">
-              <option disabled value="">Tháng</option>
-              <option
-                v-for="(month, index) in months"
-                :key="index"
-                :value="index + 1"
-              >
-                {{ month }}
-              </option>
-            </select>
-
-            <select v-model="selectedYear" @change="updateDays" id="dob-year">
-              <option disabled value="">Năm</option>
-              <option v-for="year in years" :key="year" :value="year">
-                {{ year }}
-              </option>
-            </select>
-          </div>
-        </div> -->
+       
         <button @click="signup">Đăng ký</button>
       </div>
       <p id="link-login">

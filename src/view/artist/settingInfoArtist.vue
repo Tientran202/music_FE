@@ -69,10 +69,10 @@ export default {
   data() {
     return {
       showCropperComponent: false,
-      croppedImage: null, // Hình ảnh đã cắt
-      imageSrc: null, // Dữ liệu gốc hình ảnh
-      name: "", // Tên người dùng
-      artistName: "", // Nghệ danh
+      croppedImage: null, 
+      imageSrc: null,
+      name: "", 
+      artistName: "", 
       newPass: "",
       reNewPass: "",
       oldPass: "",
@@ -90,17 +90,17 @@ export default {
         }
       );
       this.artists = response.data;
-      this.croppedImage = 'data:image/jpeg;base64,' + this.artists.artist_image
+      this.croppedImage = "data:image/jpeg;base64," + this.artists.artist_image;
     },
     handleCloseCropper() {
-      this.showCropperComponent = false; // Ẩn cropper khi sự kiện đóng được phát ra
+      this.showCropperComponent = false; 
     },
     showCropper() {
       this.showCropperComponent = true;
     },
     handleCropComplete(croppedImage) {
-      this.croppedImage = croppedImage; // Lưu ảnh đã cắt
-      this.showCropperComponent = false; // Đóng cropper
+      this.croppedImage = croppedImage; 
+      this.showCropperComponent = false;
     },
 
     async updatePass() {
@@ -114,9 +114,9 @@ export default {
           const accountId = response.data.accountId;
           if (accountId == localStorage.getItem("accountId")) {
             const payload = {
-              account_id: parseInt(accountId, 10), // ID tài khoản
-              oldPass: this.oldPass, // Mật khẩu cũ
-              newPass: this.newPass, // Mật khẩu mới
+              account_id: parseInt(accountId, 10), 
+              oldPass: this.oldPass, 
+              newPass: this.newPass,
             };
             if (this.newPass == this.reNewPass) {
               const responseUpdatePass = await fetch(
@@ -141,49 +141,31 @@ export default {
           }
         }
       } catch (error) {
-        alert(error);
+        // alert(error);
       }
     },
-    // Phương thức gửi thông tin lên backend
     async updateProfile() {
       try {
         const userId = localStorage.getItem("userId");
         const formData = new FormData();
-        formData.append("userId", userId); // Thêm tên người dùng
-        formData.append("name", this.name); // Thêm tên người dùng
-        formData.append("artistName", this.artistName); // Thêm nghệ danh
+        formData.append("userId", userId); 
+        formData.append("name", this.name); 
+        formData.append("artistName", this.artistName);
 
-        // Nếu có ảnh đã cắt, gửi ảnh dưới dạng base64 hoặc file
         if (this.croppedImage) {
           const imageFile = this.base64ToFile(this.croppedImage, "image.png");
           formData.append("image", imageFile);
-          alert("id: " + imageFile);
         }
-
-        alert("id: " + userId);
-        alert("id: " + this.name);
-        alert("id: " + this.artistName);
-        // Gửi request POST lên server
-        const response = await fetch(
-          "http://localhost:8080/api/user/updateProfile",
-          {
-            method: "PATCH",
-            body: formData,
-          }
-        );
-
-        const result = await response.json();
-        if (response.ok) {
-          alert("Cập nhật thành công!");
-        } else {
-          alert("Cập nhật thất bại: " + result.message);
-        }
+        await fetch("http://localhost:8080/api/user/updateProfile", {
+          method: "PATCH",
+          body: formData,
+        });
+        alert("Cập nhật thành công!");
       } catch (error) {
-        alert(error);
+        alert("ok");
       }
     },
 
-    // Chuyển đổi Base64 sang File (nếu cần)
     base64ToFile(base64Data, fileName) {
       const byteCharacters = atob(base64Data.split(",")[1]);
       const byteArrays = [];

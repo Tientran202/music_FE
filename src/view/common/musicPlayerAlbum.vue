@@ -35,7 +35,6 @@ export default {
   methods: {
     ...mapActions(['togglePlayPause', 'playNextSong', 'setSong']),
 
-    // Đổi audioSrc khi thay đổi bài hát
     setAudioSource(song) {
       let audioBlob;
       if (typeof song.audio === 'string') {

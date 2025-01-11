@@ -3,7 +3,6 @@
     <button @click="createAlbum">Tạo Album</button>
     <button @click="createPlaylist">Tạo Playlist</button>
     <button @click="addMusic">Thêm Nhạc</button>
-    <button @click="createStory">Tạo Story</button>
   </div>
 </template>
 
@@ -34,7 +33,7 @@ export default {
   background: #5ba876;
   border: 1px solid #36a54e;
   width: 80px;
-  height: 145px;
+  height: 110px;
   border-radius: 10px;
   position: absolute;
   z-index: 999;

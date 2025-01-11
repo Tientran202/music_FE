@@ -69,7 +69,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["currentSong"]), // Lấy bài hát hiện tại từ store
+    ...mapGetters(["currentSong"]), 
   },
   created() {
     this.getIndexAlbum().then(() => {
@@ -82,7 +82,6 @@ export default {
 
     playAllSongs() {
       if (this.indexMusicResults.length > 0) {
-        // Gọi action playAllSongs để phát toàn bộ album
         this.$store.dispatch("playAllSongs", this.indexMusicResults);
       } else {
         console.error("Danh sách bài hát trống!");
@@ -90,27 +89,23 @@ export default {
     },
     playSelectedSong(music) {
       if (music) {
-        // Gửi bài nhạc hiện tại vào Vuex Store
         this.playSong(music);
       }
     },
 
     async initMusicPlayer() {
-      await this.getIndexMusic(); // Lấy dữ liệu bài hát
+      await this.getIndexMusic(); 
       if (this.musics && this.musics.musicAudio) {
-        // Kiểm tra nếu dữ liệu hợp lệ
-        this.playThisSong(); // Gọi phát nhạc
+        this.playThisSong(); 
       }
     },
     async togglePlay() {
       const musicId = this.$route.params.id;
-      // Lấy thông tin bài hát từ API
       const response = await axios.get(
         `http://localhost:8080/api/music/getIndexMusicArtist/${musicId}`
       );
       const musicData = response.data;
       if (musicData && musicData.musicAudio) {
-        // Tạo dữ liệu bài hát mới và gửi tới store
         const newMusic = {
           audio: musicData.musicAudio,
           name: musicData.music_name,
@@ -149,7 +144,7 @@ export default {
           );
           this.indexMusicResults = response.data;
           for (let i = 0; i < this.indexMusicResults.length; i++) {
-            this.audioMusics.push(this.indexMusicResults[i].audio); // Thêm từng phần tử vào audioMusics
+            this.audioMusics.push(this.indexMusicResults[i].audio); 
           }
         } catch (error) {
           console.error("Error fetching search results:", error);
@@ -228,7 +223,7 @@ ul:hover {
   background: #383838;
 }
 .table-row.active {
-  background: #383838; /* Màu nền khi bài hát đang phát */
+  background: #383838; 
 }
 ul li {
   display: flex;

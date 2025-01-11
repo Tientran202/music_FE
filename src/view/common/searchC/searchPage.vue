@@ -1,11 +1,9 @@
 <template>
   <div>
     <SearchMenu />
-    <!-- Thanh menu điều hướng -->
     <div class="router">
       <router-view />
     </div>
-    <!-- Hiển thị trang con như AlbumPage, TrackPage -->
   </div>
 </template>
 <script>

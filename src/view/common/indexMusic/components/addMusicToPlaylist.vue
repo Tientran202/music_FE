@@ -55,30 +55,6 @@ export default {
       }
     },
 
-    // async addToPlaylist(playlistId) {
-    //   const musicId = this.$route.params.id; // Lấy `music_id` từ `localStorage`
-    //   try {
-    //     const response = await fetch(
-    //       "http://localhost:8080/api/playlistRelations",
-    //       {
-    //         method: "POST",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({
-    //           playlistId: playlistId,
-    //           musicId: parseInt(musicId),
-    //         }),
-    //       }
-    //     );
-
-    //     if (!response.ok) throw new Error("Failed to add to playlist.");
-    //     alert("Đã thêm vào danh sách phát thành công!");
-    //   } catch (error) {
-    //     console.error("Error adding to playlist:", error);
-    //     alert("Không thể thêm vào danh sách phát!");
-    //   }
-    // },
   },
 };
 </script>
@@ -96,8 +72,8 @@ export default {
 }
 
 .playlist-container {
-  max-height: 100px; /* Chiều cao tối đa */
-  overflow-y: auto; /* Thanh cuộn dọc */
+  max-height: 100px; 
+  overflow-y: auto; 
   border-radius: 8px;
   padding: 10px;
 }

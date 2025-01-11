@@ -8,7 +8,7 @@
       />
       <div class="info">
         <div>
-          <span>Nghệ sĩ</span>
+          <span>Hồ sơ của bạn - Nghệ sĩ</span>
         </div>
         <div>
           <span class="name">{{ artists.artist_name }}</span>
@@ -42,6 +42,7 @@
         />
       </div>
     </div>
+   
     <div class="info-playlist">
       <div class="title1">
         <span class="topic">Album</span>
@@ -86,8 +87,7 @@
       <div class="title1">
         <span class="topic">Bài nhạc</span>
       </div>
-      <!-- confir;
-    private boolean hidden; -->
+   
       <div class="container">
         <div
           v-for="(music, index) in musics.slice(0, 7)"
@@ -131,6 +131,7 @@ export default {
       musics: [],
       artists: [],
       albums: [],
+      storys: [],
       userId: "",
       limit: 7,
       isFunctionDisplay: false,
@@ -141,10 +142,10 @@ export default {
     this.getAlbumByArtistId();
     this.getPlaylistByArtistId();
     this.getMusicByArtistId();
+    this.getStoryByArtistId();
   },
   computed: {
     visiblePlaylists() {
-      // Nếu showAll là true, hiển thị tất cả playlist
       return this.showAll
         ? this.playlists
         : this.playlists.slice(0, this.limit);
@@ -153,6 +154,9 @@ export default {
   methods: {
     goToSetting() {
       this.$router.push({ path: "/settingInfoArtist" });
+    },
+    goToStory(storyId){
+      this.$router.push(`/indexStory/${storyId}`)
     },
     goToAlbum(albumId) {
       this.$router.push(`/indexAlbum/${albumId}`);
@@ -206,13 +210,22 @@ export default {
       );
       this.musics = response.data;
     },
+    async getStoryByArtistId() {
+      const response = await axios.get(
+        "http://localhost:8080/api/story/getAllStoryByArtistId",
+        {
+          params: { artistId: this.userId },
+        }
+      );
+      this.storys = response.data;
+    },
   },
 };
 </script>
 
 <style scoped>
 .info-container {
-  height: 1090px;
+  height: 1600px;
   flex-direction: column;
   display: flex;
   color: white;
@@ -301,6 +314,11 @@ export default {
 .img-item-playlist {
   width: 160px;
   height: 160px;
+  border-radius: 10px;
+}
+.img-item-story {
+  width: 160px;
+  height: 320px;
   border-radius: 10px;
 }
 .flag-img {

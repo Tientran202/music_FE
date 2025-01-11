@@ -27,7 +27,6 @@ export default {
   },
   methods: {
     navigateToMusic(musicId) {
-      // Dẫn tới trang hiển thị chi tiết music với index
       this.$router.push(`/index/${musicId}`);
     },
     async getRecentlyMusic() {
@@ -88,9 +87,9 @@ img {
   text-align: left;
   font-size: 14px;
   width: 150px;
-  overflow: hidden; /* Ẩn phần văn bản tràn ra ngoài */
-  text-overflow: ellipsis; /* Thêm dấu ba chấm khi văn bản bị cắt */
-  display: block; /* Đảm bảo phần tử là block để các thuộc tính trên hoạt động */
+  overflow: hidden;
+  text-overflow: ellipsis; 
+  display: block;
 }
 .title2 {
   font-size: 12px;

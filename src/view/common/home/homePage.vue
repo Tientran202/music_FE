@@ -71,29 +71,7 @@
           </div>
         </div>
       </div>
-      <div class="playlist-container">
-        <div class="title-container">
-          <div class="title">Hàng đầu cho bạn</div>
-          <a v-if="!showAll" @click="goRecentMusic" class="view-all"
-            >Xem tất cả</a
-          >
-        </div>
-        <div class="playlist-wrapper">
-          <div
-            v-for="(playlist, index) in visiblePlaylists"
-            :key="index"
-            class="playlist-item"
-            @click="indexMusic(playlist.id)"
-          >
-            <img
-              :src="playlist.cover"
-              alt="playlist cover"
-              class="playlist-cover"
-            />
-            <p>{{ playlist.name }}</p>
-          </div>
-        </div>
-      </div>
+     
       <div class="playlist-container">
         <div class="title-container">
           <div class="title">Nghệ sĩ gần đây</div>
@@ -131,14 +109,13 @@ export default {
       popularArtists: [],
       imageSrc: null,
       categories: ["pop", "rap", "O&B"],
-      showAll: false, // Trạng thái hiển thị (giới hạn hoặc tất cả)
-      limit: 8, // Số lượng playlist hiển thị ban đầu
+      showAll: false, 
+      limit: 8, 
     };
   },
 
   computed: {
     visiblePlaylists() {
-      // Nếu showAll là true, hiển thị tất cả playlist
       return this.showAll
         ? this.listNewMusics
         : this.listNewMusics.slice(0, this.limit);
@@ -196,13 +173,13 @@ export default {
     async fetchGenres() {
       try {
         const response = await axios.get("http://localhost:8080/api/genres");
-        this.genres = response.data; // Gán dữ liệu API vào biến genres
+        this.genres = response.data; 
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu thể loại nhạc:", error);
       }
     },
     showAllPlaylists() {
-      this.showAll = true; // Thay đổi trạng thái để hiển thị tất cả playlist
+      this.showAll = true; 
     },
     goToAllPopularArtist() {
       this.$router.push({ path: "/allPopularArtist" });
@@ -253,7 +230,7 @@ export default {
 
 <style scoped>
 button {
-  cursor: pointer; /* Thay đổi con trỏ thành dạng chỉ tay khi hover */
+  cursor: pointer; 
 }
 
 #home {
@@ -292,7 +269,7 @@ button {
   margin: 0 0 0 10px;
 }
 .view-all {
-  cursor: pointer; /* Thay đổi con trỏ thành dạng chỉ tay khi hover */
+  cursor: pointer; 
 }
 .playlist-item {
   width: 300px;
@@ -303,7 +280,7 @@ button {
   padding: 10px;
   background-color: #88888860;
   border-radius: 8px;
-  cursor: pointer; /* Thay đổi con trỏ thành dạng chỉ tay khi hover */
+  cursor: pointer; 
 }
 .playlist-cover {
   border-radius: 5px;

@@ -47,16 +47,13 @@ export default {
         return;
       }
 
-      // Khởi tạo FFmpeg
       const ffmpeg = createFFmpeg({ log: true });
       await ffmpeg.load();
 
-      // Đọc file và nạp vào bộ nhớ FFmpeg
       const fileName = this.audioFile.name;
       const outputFile = `trimmed_${fileName}`;
       ffmpeg.FS('writeFile', fileName, await fetchFile(this.audioFile));
 
-      // Chạy lệnh cắt file âm thanh
       await ffmpeg.run(
         '-i',
         fileName,
@@ -69,13 +66,10 @@ export default {
         outputFile
       );
 
-      // Lấy file kết quả từ bộ nhớ FFmpeg
       const data = ffmpeg.FS('readFile', outputFile);
 
-      // Tạo URL blob cho file đã cắt
       this.trimmedAudioUrl = URL.createObjectURL(new Blob([data.buffer], { type: 'audio/mp3' }));
 
-      // Dọn dẹp bộ nhớ FFmpeg
       ffmpeg.FS('unlink', fileName);
       ffmpeg.FS('unlink', outputFile);
     },
