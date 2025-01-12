@@ -2,7 +2,6 @@
   <div class="container">
     <div class="container-search">
       <span class="title">Danh sách người dùng yêu cầu trở thành nghệ sĩ</span>
-     
     </div>
     <ul>
       <li class="index">#</li>
@@ -22,7 +21,9 @@
       <li class="stage-name">{{ requestToBecomeArtist.stage_name }}</li>
       <li class="time">{{ requestToBecomeArtist.time_request_artist }}</li>
       <li class="btn">
-        <button @click="acceptRequestArtist(requestToBecomeArtist.id)">Chấp nhận</button>
+        <button @click="acceptRequestArtist(requestToBecomeArtist.id)">
+          Chấp nhận
+        </button>
       </li>
     </ul>
   </div>
@@ -36,24 +37,30 @@ export default {
   methods: {
     async acceptRequestArtist(reportId) {
       try {
-        const formData = new FormData();
-        formData.append("userId", reportId);
-        const response = await fetch(
-          "http://localhost:8080/api/admin/acceptRequestArtist",
-          {
-            method: "POST",
-            body: formData,
-          }
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await axios.get(
+          "http://localhost:8080/api/auth/check-token",
+          { headers: { Authorization: `Bearer ${accessToken}` } }
         );
-        if (response.ok) {
-          alert("Đã chấp nhận yêu cầu");
-          this.fetchRequestToBecomeArtist();
-        } else {
-          alert("lỗi");
+        if (response.status === 200) {
+          const formData = new FormData();
+          formData.append("userId", reportId);
+          const response = await fetch(
+            "http://localhost:8080/api/admin/acceptRequestArtist",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+          if (response.ok) {
+            alert("Đã chấp nhận yêu cầu");
+            this.fetchRequestToBecomeArtist();
+          } else {
+            alert("lỗi");
+          }
         }
       } catch (error) {
-        console.error("Error uploading music:", error);
-        alert("Có lỗi xảy ra khi tải bài hát lên.");
+        // alert(error);
       }
     },
     async fetchRequestToBecomeArtist() {
@@ -144,6 +151,7 @@ li {
   justify-content: center;
 }
 button {
+  cursor: pointer;
   height: 25px;
   border: 1px solid #000000;
   background: #ffffff;

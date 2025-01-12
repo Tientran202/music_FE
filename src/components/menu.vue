@@ -20,6 +20,7 @@
           v-model="searchKeyword"
           @keydown.enter="onSearch"
         />
+        <span class="loginD" @click="gotToLogin"> Đăng nhập </span>
       </header>
       <div
         v-if="admin === 'user'"
@@ -77,6 +78,9 @@ export default {
         }
       }
     },
+    gotToLogin() {
+      this.$router.push("/login");
+    },
     async goToDashboard() {
       this.$router.push("/dashboard/musicReported");
     },
@@ -128,10 +132,13 @@ export default {
   width: 20px;
   height: 20px;
 }
-.logoutH{
-    position: absolute;
-
- 
+.logoutH {
+  position: absolute;
+}
+.loginD {
+  cursor: pointer;
+  position: absolute;
+  margin: 10px 0 0 1100px;
 }
 .container {
   color: #ffffff;
@@ -173,12 +180,7 @@ export default {
   border: 1px solid #e8e5e5;
   outline: none;
 }
-/* input:focus {
-  height: 48px;
-  background-color: #000000;
-  border: 2px solid #ffffff;
-  padding-left: 9px;
-} */
+
 .image-user-container {
   cursor: pointer;
   width: 40px;

@@ -69,10 +69,10 @@ export default {
   data() {
     return {
       showCropperComponent: false,
-      croppedImage: null, 
+      croppedImage: null,
       imageSrc: null,
-      name: "", 
-      artistName: "", 
+      name: "",
+      artistName: "",
       newPass: "",
       reNewPass: "",
       oldPass: "",
@@ -93,13 +93,13 @@ export default {
       this.croppedImage = "data:image/jpeg;base64," + this.artists.artist_image;
     },
     handleCloseCropper() {
-      this.showCropperComponent = false; 
+      this.showCropperComponent = false;
     },
     showCropper() {
       this.showCropperComponent = true;
     },
     handleCropComplete(croppedImage) {
-      this.croppedImage = croppedImage; 
+      this.croppedImage = croppedImage;
       this.showCropperComponent = false;
     },
 
@@ -114,8 +114,8 @@ export default {
           const accountId = response.data.accountId;
           if (accountId == localStorage.getItem("accountId")) {
             const payload = {
-              account_id: parseInt(accountId, 10), 
-              oldPass: this.oldPass, 
+              account_id: parseInt(accountId, 10),
+              oldPass: this.oldPass,
               newPass: this.newPass,
             };
             if (this.newPass == this.reNewPass) {
@@ -146,23 +146,36 @@ export default {
     },
     async updateProfile() {
       try {
-        const userId = localStorage.getItem("userId");
-        const formData = new FormData();
-        formData.append("userId", userId); 
-        formData.append("name", this.name); 
-        formData.append("artistName", this.artistName);
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await axios.get(
+          "http://localhost:8080/api/auth/check-token",
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+        if (response.status === 200) {
+          const accountId = response.data.accountId;
+          if (accountId == localStorage.getItem("accountId")) {
+            const userId = localStorage.getItem("userId");
+            const formData = new FormData();
+            formData.append("userId", userId);
+            formData.append("name", this.name);
+            formData.append("artistName", this.artistName);
 
-        if (this.croppedImage) {
-          const imageFile = this.base64ToFile(this.croppedImage, "image.png");
-          formData.append("image", imageFile);
+            if (this.croppedImage) {
+              const imageFile = this.base64ToFile(
+                this.croppedImage,
+                "image.png"
+              );
+              formData.append("image", imageFile);
+            }
+            await fetch("http://localhost:8080/api/user/updateProfile", {
+              method: "PATCH",
+              body: formData,
+            });
+            alert("Cập nhật thành công!");
+          }
         }
-        await fetch("http://localhost:8080/api/user/updateProfile", {
-          method: "PATCH",
-          body: formData,
-        });
-        alert("Cập nhật thành công!");
       } catch (error) {
-        alert("ok");
+        // alert(error);
       }
     },
 
